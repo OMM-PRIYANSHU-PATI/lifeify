@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { TriFactorQuiz } from "@/components/health/tri-factor-quiz";
+import { SleepQuiz } from "@/components/health/quizzes/sleep-quiz";
+import { RecoveryQuiz } from "@/components/health/quizzes/recovery-quiz";
+import { MoodQuiz } from "@/components/health/quizzes/mood-quiz";
 
 interface TrackClientProps {
   type: string;
@@ -11,13 +14,39 @@ interface TrackClientProps {
 }
 
 export function TrackClient({ type, unit, initialValue, recentLogs }: TrackClientProps) {
-  const [showQuiz, setShowQuiz] = useState(false);
+  const [activeQuiz, setActiveQuiz] = useState<"specialized" | "hub" | null>(null);
   const [value, setValue] = useState(String(initialValue));
   const [logs, setLogs] = useState(recentLogs);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  const isTriFactor = type === "sleep" || type === "mood" || type === "recovery";
+  const isSleep = type === "sleep";
+  const isRecovery = type === "recovery";
+  const isMood = type === "mood";
+  const isTriFactor = isSleep || isRecovery || isMood;
+
+  const quizMetadata = isSleep
+    ? {
+        title: "🌙 Gamified Sleep Chrono-Quiz",
+        badge: "+25 XP",
+        desc: "Never guess hours! Inactive or variable schedule? We infer actual sleep stages, circadian efficiency, and sleep debt through 7 intuitive signals.",
+        buttonText: "Play Sleep Quest 🌙",
+      }
+    : isRecovery
+    ? {
+        title: "💚 Autonomic Recovery & Readiness Quest",
+        badge: "+25 XP",
+        desc: "Estimate autonomic parasympathetic recharge, body soreness zones, and strain capacity without needing an expensive wearable.",
+        buttonText: "Play Recovery Quest 💚",
+      }
+    : isMood
+    ? {
+        title: "☀️ Mind & Mood Radar",
+        badge: "+25 XP",
+        desc: "Explore your cognitive clarity, social battery, and allostatic stress index through quick scenario cards.",
+        buttonText: "Play Mood Radar ☀️",
+      }
+    : null;
 
   const handleLog = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,35 +76,63 @@ export function TrackClient({ type, unit, initialValue, recentLogs }: TrackClien
         </div>
       )}
 
-      {isTriFactor && (
+      {isTriFactor && quizMetadata && (
         <div className="rounded-2xl border border-primary/30 bg-surface p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-start gap-3">
             <span className="text-2xl mt-0.5">🎮</span>
             <div>
               <div className="flex items-center gap-2">
-                <h4 className="text-sm font-bold text-ink">Gamified Tri-Factor Predictor</h4>
+                <h4 className="text-sm font-bold text-ink">{quizMetadata.title}</h4>
                 <span className="rounded-full bg-primary-soft px-2 py-0.5 text-[10px] font-extrabold text-primary-dark">
-                  +20 XP
+                  {quizMetadata.badge}
                 </span>
               </div>
               <p className="text-xs text-ink-soft mt-0.5 leading-relaxed">
-                Don&apos;t guess individual numbers! Take our 30-second quiz to predict Recovery, Mood, and Sleep in one go.
+                {quizMetadata.desc}
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => setShowQuiz(!showQuiz)}
-            className="lif-btn-primary py-2 px-4 text-xs font-bold whitespace-nowrap shrink-0"
-          >
-            {showQuiz ? "Hide Quiz ✕" : "Play Gamified Quiz 🎮"}
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setActiveQuiz(activeQuiz === "specialized" ? null : "specialized")}
+              className="lif-btn-primary py-2 px-4 text-xs font-bold whitespace-nowrap"
+            >
+              {activeQuiz === "specialized" ? "Hide Quiz ✕" : quizMetadata.buttonText}
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveQuiz(activeQuiz === "hub" ? null : "hub")}
+              className="lif-btn-secondary py-2 px-3 text-xs font-bold whitespace-nowrap"
+              title="Open all health predictors"
+            >
+              {activeQuiz === "hub" ? "Close Hub" : "All Quizzes 🎯"}
+            </button>
+          </div>
         </div>
       )}
 
-      {showQuiz && isTriFactor && (
+      {activeQuiz === "specialized" && isSleep && (
         <div className="animate-slideUp">
-          <TriFactorQuiz onDone={() => setShowQuiz(false)} variant="inline" />
+          <SleepQuiz onDone={() => setActiveQuiz(null)} variant="inline" />
+        </div>
+      )}
+
+      {activeQuiz === "specialized" && isRecovery && (
+        <div className="animate-slideUp">
+          <RecoveryQuiz onDone={() => setActiveQuiz(null)} variant="inline" />
+        </div>
+      )}
+
+      {activeQuiz === "specialized" && isMood && (
+        <div className="animate-slideUp">
+          <MoodQuiz onDone={() => setActiveQuiz(null)} variant="inline" />
+        </div>
+      )}
+
+      {activeQuiz === "hub" && (
+        <div className="animate-slideUp">
+          <TriFactorQuiz onDone={() => setActiveQuiz(null)} variant="inline" />
         </div>
       )}
 

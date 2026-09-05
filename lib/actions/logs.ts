@@ -289,3 +289,120 @@ export async function logTriFactorQuiz(input: {
 
   return { ok: true, message: "Tri-Factor predictions locked in! +20 XP awarded 🎯" };
 }
+
+export async function logSleepFromQuiz(input: {
+  hours: number;
+  quality: number;
+  efficiency?: number;
+  deepScore?: number;
+  debtStatus?: string;
+  tips?: string;
+}): Promise<ActionResult> {
+  const user = await requireUser();
+  await prisma.healthLog.create({
+    data: {
+      userId: user.id,
+      logType: "SLEEP",
+      type: "sleep",
+      value: input.hours,
+      unit: "hours",
+      metadata: JSON.stringify({
+        quality: input.quality,
+        efficiency: input.efficiency,
+        deepScore: input.deepScore,
+        debtStatus: input.debtStatus,
+        tips: input.tips,
+        source: "sleep-chrono-quiz",
+      }),
+    },
+  });
+
+  try {
+    await awardGamificationPoints("checkin");
+    await calculateHealthScore(user.id);
+    revalidatePath("/app/dashboard");
+    revalidatePath("/app/track/sleep");
+    revalidatePath("/app/check-in");
+  } catch {}
+
+  return { ok: true, message: `Sleep of ${input.hours}h logged with ${input.quality}% quality (+25 XP)` };
+}
+
+export async function logRecoveryFromQuiz(input: {
+  score: number;
+  status: string;
+  muscularTone?: string;
+  autonomicTone?: string;
+  strain?: string;
+}): Promise<ActionResult> {
+  const user = await requireUser();
+  await prisma.healthLog.create({
+    data: {
+      userId: user.id,
+      logType: "RECOVERY",
+      type: "recovery",
+      value: input.score,
+      unit: "%",
+      metadata: JSON.stringify({
+        status: input.status,
+        muscularTone: input.muscularTone,
+        autonomicTone: input.autonomicTone,
+        recommendedStrain: input.strain,
+        source: "recovery-readiness-quiz",
+      }),
+    },
+  });
+
+  try {
+    await awardGamificationPoints("checkin");
+    await calculateHealthScore(user.id);
+    revalidatePath("/app/dashboard");
+    revalidatePath("/app/recovery");
+    revalidatePath("/app/track/recovery");
+    revalidatePath("/app/check-in");
+  } catch {}
+
+  return { ok: true, message: `Recovery readiness of ${input.score}% logged (+25 XP)` };
+}
+
+export async function logMoodFromQuiz(input: {
+  score: number;
+  valence: string;
+  stressIndex?: number;
+  focus?: string;
+}): Promise<ActionResult> {
+  const user = await requireUser();
+  const date = startOfDay(new Date());
+
+  await prisma.healthLog.create({
+    data: {
+      userId: user.id,
+      logType: "MOOD",
+      type: "mood",
+      value: input.score,
+      unit: "score",
+      metadata: JSON.stringify({
+        valence: input.valence,
+        stressIndex: input.stressIndex,
+        cognitiveFocus: input.focus,
+        source: "mood-mindset-quiz",
+      }),
+    },
+  });
+
+  await prisma.dailyCheckIn.upsert({
+    where: { userId_date: { userId: user.id, date } },
+    create: { userId: user.id, date, completed: true, moodScore: input.score },
+    update: { completed: true, moodScore: input.score },
+  });
+
+  try {
+    await awardGamificationPoints("checkin");
+    await calculateHealthScore(user.id);
+    revalidatePath("/app/dashboard");
+    revalidatePath("/app/track/mood");
+    revalidatePath("/app/check-in");
+  } catch {}
+
+  return { ok: true, message: `Mood (${input.score}/5 - ${input.valence}) logged (+25 XP)` };
+}

@@ -3,9 +3,10 @@
 import React, { useState } from "react";
 import { ShieldCheck } from "lucide-react";
 import { TriFactorQuiz } from "@/components/health/tri-factor-quiz";
+import { RecoveryQuiz } from "@/components/health/quizzes/recovery-quiz";
 
 export function RecoveryClient() {
-  const [showQuiz, setShowQuiz] = useState(false);
+  const [activeQuiz, setActiveQuiz] = useState<"recovery" | "hub" | null>(null);
   const [activeProtocol, setActiveProtocol] = useState<"dengue" | "post_viral" | "post_op">("dengue");
   const [currentDay, setCurrentDay] = useState(4);
   const [checklist, setChecklist] = useState<Record<string, boolean>>({
@@ -89,31 +90,47 @@ export function RecoveryClient() {
       {/* Daily Recovery & Tri-Factor Quiz Banner */}
       <div className="rounded-2xl border border-primary/30 bg-surface p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
         <div className="flex items-start gap-3">
-          <span className="text-2xl mt-0.5">🎮</span>
+          <span className="text-2xl mt-0.5">💚</span>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-ink">Daily Autonomic Recovery & Readiness</h3>
+              <h3 className="text-sm font-bold text-ink">Autonomic Recovery & Readiness Quest</h3>
               <span className="rounded-full bg-primary-soft px-2 py-0.5 text-[10px] font-extrabold text-primary-dark">
-                +20 XP
+                +25 XP
               </span>
             </div>
             <p className="text-xs text-ink-soft mt-0.5 leading-relaxed">
-              Predict your readiness score, autonomic recharge, mood, and sleep using the interactive gamified check-in.
+              Estimate autonomic tone, muscle soreness zones, and physical strain capacity without guessing metrics.
             </p>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={() => setShowQuiz(!showQuiz)}
-          className="lif-btn-primary py-2 px-4 text-xs font-bold whitespace-nowrap shrink-0"
-        >
-          {showQuiz ? "Hide Quiz ✕" : "Launch Tri-Factor Quiz 🎮"}
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => setActiveQuiz(activeQuiz === "recovery" ? null : "recovery")}
+            className="lif-btn-primary py-2 px-4 text-xs font-bold whitespace-nowrap"
+          >
+            {activeQuiz === "recovery" ? "Hide Quiz ✕" : "Play Recovery Quest 💚"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveQuiz(activeQuiz === "hub" ? null : "hub")}
+            className="lif-btn-secondary py-2 px-3 text-xs font-bold whitespace-nowrap"
+            title="Open all health predictors"
+          >
+            {activeQuiz === "hub" ? "Close Hub" : "All Quizzes 🎯"}
+          </button>
+        </div>
       </div>
 
-      {showQuiz && (
+      {activeQuiz === "recovery" && (
         <div className="animate-slideUp">
-          <TriFactorQuiz onDone={() => setShowQuiz(false)} variant="inline" />
+          <RecoveryQuiz onDone={() => setActiveQuiz(null)} variant="inline" />
+        </div>
+      )}
+
+      {activeQuiz === "hub" && (
+        <div className="animate-slideUp">
+          <TriFactorQuiz onDone={() => setActiveQuiz(null)} variant="inline" />
         </div>
       )}
 
