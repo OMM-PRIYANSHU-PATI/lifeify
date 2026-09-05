@@ -35,6 +35,7 @@ type FoodResult = { id: string; name: string; servingLabel: string; calories: nu
 export function QuickLogButton() {
   const [open, setOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [tab, setTab] = useState<Tab>("water");
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 640px)");
@@ -50,27 +51,34 @@ export function QuickLogButton() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-20 right-4 z-40 flex h-13 w-13 items-center justify-center rounded-2xl bg-primary text-2xl font-bold text-white shadow-lg shadow-primary/25 transition-all duration-200 hover:scale-105 hover:bg-primary-dark sm:bottom-6 sm:right-6 select-none"
+        className="fixed bottom-20 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-2xl font-bold text-white shadow-xl shadow-primary/30 transition-all duration-200 hover:scale-105 hover:bg-primary-dark sm:bottom-6 sm:right-6 select-none"
         aria-label="Quick log biometrics"
       >
         +
       </button>
 
       {isDesktop ? (
-        <Modal open={open} onClose={close} title="Quick Log Biometrics" size="md">
-          <QuickLogTabs onDone={close} />
+        <Modal open={open} onClose={close} title="Quick Log Biometrics" size={tab === "quiz" ? "lg" : "md"}>
+          <QuickLogTabs onDone={close} tab={tab} onTabChange={setTab} />
         </Modal>
       ) : (
         <BottomSheet open={open} onClose={close} title="Quick Log Biometrics">
-          <QuickLogTabs onDone={close} />
+          <QuickLogTabs onDone={close} tab={tab} onTabChange={setTab} />
         </BottomSheet>
       )}
     </>
   );
 }
 
-function QuickLogTabs({ onDone }: { onDone: () => void }) {
-  const [tab, setTab] = useState<Tab>("water");
+function QuickLogTabs({
+  onDone,
+  tab,
+  onTabChange,
+}: {
+  onDone: () => void;
+  tab: Tab;
+  onTabChange: (t: Tab) => void;
+}) {
   const router = useRouter();
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [pending, startTransition] = useTransition();
@@ -97,7 +105,7 @@ function QuickLogTabs({ onDone }: { onDone: () => void }) {
             role="tab"
             type="button"
             aria-selected={tab === t.key}
-            onClick={() => setTab(t.key)}
+            onClick={() => onTabChange(t.key)}
             className={`lif-pill text-xs px-3 py-1.5 ${
               tab === t.key ? "border-primary bg-primary-soft text-primary-dark font-bold" : ""
             }`}
@@ -162,7 +170,7 @@ function QuickLogTabs({ onDone }: { onDone: () => void }) {
             </div>
             <button
               type="button"
-              onClick={() => setTab("quiz")}
+              onClick={() => onTabChange("quiz")}
               className="lif-btn-primary py-1 px-3 text-[11px] font-bold shrink-0"
             >
               Play Quiz →
@@ -220,7 +228,7 @@ function QuickLogTabs({ onDone }: { onDone: () => void }) {
             </div>
             <button
               type="button"
-              onClick={() => setTab("quiz")}
+              onClick={() => onTabChange("quiz")}
               className="lif-btn-primary py-1 px-3 text-[11px] font-bold shrink-0"
             >
               Play Quiz →

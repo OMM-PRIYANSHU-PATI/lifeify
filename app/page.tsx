@@ -6,11 +6,6 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 export default async function HomePage() {
   const user = await getCurrentUser();
 
-  // If user is already authenticated, redirect directly to their dashboard
-  if (user) {
-    redirect("/app/dashboard");
-  }
-
   const features = [
     {
       emoji: "📷",
@@ -89,16 +84,10 @@ export default async function HomePage() {
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
             <Link
-              href="/login"
-              className="rounded-xl border border-line bg-surface px-3.5 py-1.5 text-xs font-bold text-ink hover:bg-background transition-colors"
+              href="/app/dashboard"
+              className="rounded-xl bg-primary px-4 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-primary-dark transition-all flex items-center gap-1.5"
             >
-              Log In
-            </Link>
-            <Link
-              href="/signup"
-              className="rounded-xl bg-primary px-4 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-primary-dark transition-all"
-            >
-              Sign Up
+              <span>🚀</span> Enter App (Direct Access)
             </Link>
           </div>
         </div>

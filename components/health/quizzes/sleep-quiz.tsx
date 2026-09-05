@@ -126,8 +126,10 @@ export function SleepQuiz({ onDone, variant = "inline" }: SleepQuizProps) {
 
   return (
     <div
-      className={`relative w-full rounded-2xl border border-indigo-500/20 bg-linear-to-b from-slate-900/90 to-surface p-4 sm:p-6 shadow-md transition-all ${
-        variant === "inline" ? "max-w-2xl mx-auto" : ""
+      className={`relative w-full transition-all ${
+        variant === "modal"
+          ? "p-1 sm:p-2 border-0 bg-transparent shadow-none"
+          : "max-w-2xl mx-auto rounded-2xl border border-indigo-500/25 bg-surface p-4 sm:p-6 shadow-sm"
       }`}
     >
       {/* Quiz Header */}

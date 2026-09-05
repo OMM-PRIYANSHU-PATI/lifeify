@@ -209,8 +209,10 @@ export function MorningSimulation({ onDone, variant = "inline" }: MorningSimulat
 
   return (
     <div
-      className={`w-full rounded-2xl border border-line bg-surface p-5 sm:p-7 shadow-sm space-y-6 ${
-        variant === "inline" ? "max-w-2xl mx-auto" : ""
+      className={`w-full space-y-6 transition-all ${
+        variant === "modal"
+          ? "p-1 sm:p-2 border-0 bg-transparent shadow-none"
+          : "max-w-2xl mx-auto rounded-2xl border border-line bg-surface p-5 sm:p-7 shadow-sm"
       }`}
     >
       {/* Simulation Master Header */}

@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Check, ShieldCheck, Zap, Users, HeartPulse, ArrowRight } from "lucide-react";
+import { Check, ShieldCheck, ArrowRight } from "lucide-react";
 
 export const metadata = {
   title: "Pricing & Plans | LIFEIFY",
@@ -23,7 +23,7 @@ export default function PricingPage() {
         "Informational Clinical Summaries",
       ],
       ctaText: "Get Started Free",
-      ctaHref: "/login",
+      ctaHref: "/app/dashboard",
       popular: false,
     },
     {
@@ -67,18 +67,18 @@ export default function PricingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background py-16 px-4 sm:px-6 lg:px-8 animate-fadeIn">
       <div className="max-w-6xl mx-auto space-y-12">
         {/* Header */}
         <div className="text-center space-y-4 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-soft text-primary-dark text-xs font-bold uppercase tracking-wider">
             <ShieldCheck className="w-4 h-4" />
             Zero-AI • Deterministic Privacy
           </div>
-          <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-3xl sm:text-5xl font-black text-ink tracking-tight">
             Transparent Healthcare Pricing
           </h1>
-          <p className="text-base text-slate-600 dark:text-slate-400">
+          <p className="text-xs sm:text-sm text-ink-soft leading-relaxed">
             No hidden fees, no opaque data sales, and zero speculative AI diagnoses. Just clinical-grade tools built on deterministic rules.
           </p>
         </div>
@@ -88,40 +88,40 @@ export default function PricingPage() {
           {plans.map((p) => (
             <div
               key={p.name}
-              className={`rounded-3xl p-8 flex flex-col justify-between transition relative ${
+              className={`rounded-2xl p-8 flex flex-col justify-between transition-all relative ${
                 p.popular
-                  ? "bg-white dark:bg-slate-900 border-2 border-emerald-500 shadow-xl shadow-emerald-500/10"
-                  : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm"
+                  ? "bg-surface border-2 border-primary shadow-lg ring-4 ring-primary/10"
+                  : "lif-card"
               }`}
             >
               {p.popular && (
-                <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider shadow-sm">
+                <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-white text-[11px] font-extrabold uppercase tracking-wider shadow-sm">
                   Most Popular
                 </span>
               )}
 
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">{p.name}</h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{p.description}</p>
+                  <h3 className="text-lg font-bold text-ink">{p.name}</h3>
+                  <p className="text-xs text-ink-soft mt-1 leading-relaxed">{p.description}</p>
                 </div>
 
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-black text-slate-900 dark:text-white">{p.price}</span>
-                  <span className="text-xs text-slate-500">{p.period}</span>
+                  <span className="text-4xl font-black text-ink">{p.price}</span>
+                  <span className="text-xs text-ink-muted">{p.period}</span>
                 </div>
                 {p.annualPrice && (
-                  <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                  <div className="text-xs font-bold text-primary">
                     {p.annualPrice}
                   </div>
                 )}
 
-                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
-                  <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Features Included:</div>
+                <div className="pt-4 border-t border-line space-y-3">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">Features Included:</div>
                   <ul className="space-y-2.5">
                     {p.features.map((f, i) => (
-                      <li key={i} className="flex items-start gap-2.5 text-xs text-slate-700 dark:text-slate-300">
-                        <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                      <li key={i} className="flex items-start gap-2.5 text-xs text-ink-soft">
+                        <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                         <span>{f}</span>
                       </li>
                     ))}
@@ -132,10 +132,10 @@ export default function PricingPage() {
               <div className="pt-8">
                 <Link
                   href={p.ctaHref}
-                  className={`w-full py-3 rounded-xl font-semibold text-xs flex items-center justify-center gap-2 transition ${
+                  className={`w-full py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-xs ${
                     p.popular
-                      ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/20"
-                      : "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700"
+                      ? "lif-btn-primary"
+                      : "lif-btn-secondary"
                   }`}
                 >
                   {p.ctaText}
@@ -147,11 +147,11 @@ export default function PricingPage() {
         </div>
 
         {/* DPDP Compliance Footer */}
-        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center space-y-2">
-          <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+        <div className="p-6 rounded-2xl bg-surface border border-line text-center space-y-2">
+          <h4 className="text-xs sm:text-sm font-bold text-ink">
             Compliant with Indian Digital Personal Data Protection (DPDP) Act 2023
           </h4>
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+          <p className="text-xs text-ink-soft max-w-2xl mx-auto leading-relaxed">
             Your personal telemetry and medical files are strictly private by architecture. We do not sell user data to pharmaceutical companies, insurers, or advertising brokers.
           </p>
         </div>

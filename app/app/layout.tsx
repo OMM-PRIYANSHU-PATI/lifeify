@@ -7,19 +7,16 @@ import { logoutAction } from "@/lib/actions/auth";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
-  if (!user) redirect("/login?redirect=/app/dashboard");
-  if (!user.onboardingComplete) redirect("/onboarding");
-
-  const unread = await prisma.notification.count({ where: { userId: user.id, read: false } });
+  const unread = user ? await prisma.notification.count({ where: { userId: user.id, read: false } }) : 0;
 
   return (
     <div className="min-h-screen bg-background">
-      <Sidebar isAdmin={user.role === "ADMIN"} />
+      <Sidebar isAdmin={user?.role === "ADMIN"} />
       <BottomNav />
-      <div className="sm:pl-60">
+      <div className="sm:pl-64">
         <header className="sticky top-0 z-30 flex items-center justify-between border-b border-line/60 bg-surface/70 px-4 py-3.5 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] backdrop-blur-lg sm:px-8">
           <p className="text-sm font-medium tracking-tight text-ink">
-            {greeting()}, <span className="font-semibold">{user.name ?? "there"}</span> 👋
+            {greeting()}, <span className="font-semibold">{user?.name ?? "Explorer"}</span> 👋
           </p>
           <div className="flex items-center gap-3">
             <NotificationBell unreadCount={unread} />
