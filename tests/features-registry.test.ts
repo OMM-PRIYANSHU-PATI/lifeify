@@ -79,4 +79,17 @@ describe('414 Feature Specifications & Registry Engine', () => {
     expect(aiAssistant?.category).toBe('AI Assistant & Memory');
     expect(aiAssistant?.mapping.route).toBe('/assistant');
   });
+
+  it('verifies 100% completion and ACTIVE status of all 316 features in V1 and V2', () => {
+    const all = getAllFeatures();
+    const v1v2 = all.filter((f) => f.version === 'V1' || f.version === 'V2');
+    expect(v1v2.length).toBe(316);
+
+    for (const f of v1v2) {
+      expect(f.mapping.status).toBe('ACTIVE');
+      expect(f.mapping.route).toBeTruthy();
+      expect(f.mapping.api).toBeTruthy();
+      expect(f.mapping.models.length).toBeGreaterThan(0);
+    }
+  });
 });
