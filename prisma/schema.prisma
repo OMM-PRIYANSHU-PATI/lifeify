@@ -1,0 +1,1176 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============ AUTH ============
+model User {
+  id            String   @id @default(cuid())
+  phone         String?  @unique
+  email         String?  @unique
+  name          String?
+  role          String   @default("user") // user, doctor, caregiver, admin
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  onboardingComplete Boolean @default(false)
+  plan          String   @default("FREE")
+  status        String   @default("ACTIVE")
+
+  profile              HealthProfile?
+  healthProfile        HealthProfile?       @relation("UserHealthProfileAlias")
+  lifestyle            LifestyleProfile?
+  lifestyleProfile     LifestyleProfile?    @relation("UserLifestyleProfileAlias")
+  consents             Consent[]
+  familyMembers        FamilyMember[]
+  familyOwned          Family[]             @relation("FamilyOwner")
+  otpCodes             OtpCode[]
+  familyHistory        FamilyMedicalHistory[]
+  subjectPermissions   SubjectPermission[]
+  healthLogs           HealthLog[]
+  foods                FoodLog[]
+  vitalReadings        VitalReading[]
+  healthScores         HealthScore[]
+  medicalRecords       MedicalRecord[]
+  medicalFiles         MedicalFile[]
+  prescriptions        Prescription[]
+  medications          Medication[]
+  medicationSchedules  MedicationSchedule[] @relation("UserSchedules")
+  medicationDoses      MedicationDose[]
+  medicationStocks     MedicationStock[]
+  medicationAllergies  MedicationAllergy[]
+  medicineDuplicateAlerts MedicineDuplicateAlert[]
+  medCheckins          MedCheckin[]
+  checkIns             DailyCheckIn[]
+  checkInResponses     CheckInResponse[]
+  sideEffects          SideEffect[]
+  adrReports           ADRReport[]
+  followUps            FollowUp[]
+  conditions           Condition[]
+  emergencyCard        EmergencyMedicalCard?
+  emergencyAccess      EmergencyAccessLog[]
+  emergencyContacts    EmergencyContact[]
+  notifications        Notification[]
+  auditLogs            AuditLog[]
+  healthGoals          HealthGoal[]
+  healthGoalProgress   HealthGoalProgress[]
+  usageCounters        UsageCounter[]
+  subscription         Subscription?
+  payments             Payment[]
+  gamification         GamificationProfile?
+  badges               UserBadge[]
+  appointmentsAsPatient Appointment[]       @relation("PatientAppointments")
+  appointmentsAsDoctor  Appointment[]       @relation("DoctorAppointments")
+  doctorNotes          DoctorNote[]
+  doctorProfile        DoctorProfile?
+  fitnessPlans         FitnessPlan[]
+  nutritionPlans       NutritionPlan[]
+  sleepPlans           SleepPlan[]
+  dataSources          HealthDataSource[]
+  healthMetrics        HealthMetric[]
+  voiceLogs            VoiceLog[]
+  aiConversations      AIConversation[]
+  exportRequests       DataExportRequest[]
+  rpmEnrollmentsAsPatient RpmEnrollment[]    @relation("PatientRpm")
+  rpmEnrollmentsAsDoctor  RpmEnrollment[]    @relation("DoctorRpm")
+  rpmAlerts               RpmAlert[]
+  orgMemberships          OrgMember[]
+  labBookings             LabBooking[]
+  pharmacyOrders          PharmacyOrder[]
+  riskAssessments         DiseaseRiskAssessment[]
+
+  @@index([phone])
+  @@index([email])
+}
+
+model OtpCode {
+  id          String    @id @default(cuid())
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phone       String
+  phoneHash   String?
+  codeHash    String
+  attempts    Int       @default(0)
+  expiresAt   DateTime
+  consumedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([phone])
+  @@index([phoneHash, expiresAt])
+  @@index([expiresAt])
+}
+
+// ============ PROFILE ============
+model HealthProfile {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAlias          User?    @relation("UserHealthProfileAlias", fields: [userId], references: [id], onDelete: Cascade)
+  age                Int?
+  sex                String?  // male, female, other
+  height             Float?   // cm
+  weight             Float?   // kg
+  heightCm           Float?
+  weightKg           Float?
+  bloodGroup         String?
+  activityLevel      String?
+  dietType           String?
+  sleepTargetH       Float?   @default(8)
+  waterTargetMl      Int      @default(2000)
+  stepTarget         Int      @default(6000)
+  goals              String?  @default("[]") // JSON array
+  conditions         String?  @default("[]") // JSON array
+  allergies          String?  @default("[]") // JSON array
+  currentMedications String?  @default("[]") // JSON
+  notes              String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model LifestyleProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAlias     User?    @relation("UserLifestyleProfileAlias", fields: [userId], references: [id], onDelete: Cascade)
+  activity      String?  // sedentary, light, moderate, active
+  diet          String?  // veg, vegan, nonveg, jain
+  activityLevel String?
+  dietType      String?
+  smoking       Boolean?
+  alcohol       Boolean?
+  sleepGoal     Int?     // hours
+  waterGoal     Int?     // ml
+  sleepTargetH  Float?   @default(8)
+  waterTargetMl Int      @default(2000)
+  stepTarget    Int      @default(6000)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Consent {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String    // data_processing, medical_storage, emergency_card, analytics, ai_processing
+  version   String    @default("1.0")
+  granted   Boolean   @default(true)
+  grantedAt DateTime  @default(now())
+  revokedAt DateTime?
+
+  @@unique([userId, type])
+  @@index([userId, type])
+}
+
+model FamilyMedicalHistory {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  condition    String
+  relationship String
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ============ TRACKING ============
+model HealthLog {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String    @default("steps") // steps, distance, active_minutes, sleep_duration, water, mood, weight, calories, protein, carbs, fat, heart_rate, spo2
+  logType   String?
+  value     Float
+  unit      String?
+  startTime DateTime  @default(now())
+  endTime   DateTime?
+  loggedAt  DateTime? @default(now())
+  source    String    @default("manual") // manual, phone, watch, apple_health, google_health_connect
+  metadata  String?   // JSON
+  createdAt DateTime  @default(now())
+
+  @@index([userId, type, startTime])
+}
+
+model Food {
+  id          String   @id @default(cuid())
+  name        String
+  nameHi      String?
+  category    String?
+  region      String?  // indian, global
+  servingSize  Float    @default(100)
+  servingUnit  String   @default("g")
+  servingLabel String   @default("1 serving")
+  calories     Float
+  protein     Float    @default(0)
+  carbs       Float    @default(0)
+  fat         Float    @default(0)
+  fiber       Float    @default(0)
+  tags        String?  // JSON: veg, vegan, jain, gluten_free
+  aliases     String?  // JSON
+
+  @@index([name])
+}
+
+model FoodLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  foodId    String?
+  foodName  String
+  portion   Float    @default(1)
+  calories  Float
+  protein   Float
+  carbs     Float
+  fat       Float
+  loggedAt  DateTime @default(now())
+
+  @@index([userId, loggedAt])
+}
+
+model HealthScore {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  score        Int
+  components   String   // JSON: {sleep, hydration, activity, mood, medication, vitals}
+  calculatedAt DateTime @default(now())
+
+  @@index([userId, calculatedAt])
+}
+
+// ============ MEDICAL RECORDS ============
+model MedicalRecord {
+  id         String        @id @default(cuid())
+  userId     String
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title      String
+  type       String        @default("prescription") // prescription, lab_report, imaging, discharge, other
+  recordType String?
+  date       DateTime      @default(now())
+  recordDate DateTime?
+  notes      String?
+  fileId     String?
+  file       MedicalFile?  @relation(fields: [fileId], references: [id])
+  fileUrl    String?
+  fileType   String?
+  mimeType   String?
+  sizeBytes  Int?
+  ocrText    String?
+  createdAt  DateTime      @default(now())
+
+  prescriptions Prescription[]
+
+  @@index([userId, date])
+}
+
+model MedicalFile {
+  id        String   @id @default(cuid())
+  ownerId   String
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  path      String
+  mimeType  String
+  size      Int
+  sha256    String
+  createdAt DateTime @default(now())
+
+  records   MedicalRecord[]
+}
+
+model Prescription {
+  id              String         @id @default(cuid())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicalRecordId String?
+  medicalRecord   MedicalRecord? @relation(fields: [medicalRecordId], references: [id])
+  recordId        String?
+  doctorName      String?
+  clinicName      String?
+  date            DateTime       @default(now())
+  issuedAt        DateTime?
+  followUpDate    DateTime?
+  rawText         String?
+  rawOcrText      String?
+  extractedJson   String?
+  status          String         @default("draft") // draft, confirmed
+  notes           String?
+  createdAt       DateTime       @default(now())
+
+  medicines          PrescriptionMedicine[]
+  createdMedications Medication[]
+  followUps          FollowUp[]
+}
+
+model PrescriptionMedicine {
+  id               String       @id @default(cuid())
+  prescriptionId   String
+  prescription     Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  name             String       @default("")
+  medicineName     String?
+  saltName         String?
+  activeIngredient String?
+  dose             String?
+  doseUnit         String?
+  frequency        String?
+  timesOfDay       String?
+  duration         String?
+  durationDays     Int?
+  instructions     String?
+  confidence       Float        @default(0)
+  confirmed        Boolean      @default(false)
+
+  @@index([prescriptionId])
+}
+
+model FollowUp {
+  id             String        @id @default(cuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prescriptionId String?
+  prescription   Prescription? @relation(fields: [prescriptionId], references: [id])
+  doctorName     String?
+  dueDate        DateTime
+  status         String        @default("PENDING") // PENDING | DONE | CANCELLED
+  notes          String?
+  createdAt      DateTime      @default(now())
+
+  @@index([userId, status, dueDate])
+}
+
+// ============ MEDICATION ============
+model Medication {
+  id               String     @id @default(cuid())
+  userId           String
+  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prescriptionId   String?
+  prescription     Prescription? @relation(fields: [prescriptionId], references: [id])
+  name             String
+  brandName        String?
+  saltName         String?
+  activeIngredient String?
+  dose             String?
+  doseUnit         String?
+  form             String?    // tablet, capsule, syrup, injection
+  strength         String?
+  frequency        String     @default("OD")
+  timesOfDay       String     @default("[]")
+  durationDays     Int?
+  condition        String?
+  instructions     String?
+  prescribedBy     String?
+  startDate        DateTime   @default(now())
+  endDate          DateTime?
+  status           String     @default("active") // active, paused, completed, archived
+  active           Boolean    @default(true)
+  archivedAt       DateTime?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  schedule         MedicationSchedule[]
+  doses            MedicationDose[]
+  stock            MedicationStock?
+  sideEffects      SideEffect[]
+  adrReports       ADRReport[]
+
+  @@index([userId, status])
+}
+
+model MedicationSchedule {
+  id           String           @id @default(cuid())
+  medicationId String
+  medication   Medication       @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User             @relation("UserSchedules", fields: [userId], references: [id], onDelete: Cascade)
+  slot         String?          // MORNING | AFTERNOON | EVENING | NIGHT | CUSTOM
+  timeOfDay    String?          // morning, afternoon, evening, night, custom
+  time         String           // HH:mm
+  dose         Float            @default(1)
+  doseUnit     String           @default("tablet")
+  daysOfWeek   String?          // JSON array of 0-6
+
+  doses        MedicationDose[]
+
+  @@index([medicationId])
+  @@index([userId])
+}
+
+model MedicationDose {
+  id           String              @id @default(cuid())
+  userId       String
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicationId String
+  medication   Medication          @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  scheduleId   String?
+  schedule     MedicationSchedule? @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  scheduledAt  DateTime
+  status       String              @default("scheduled") // scheduled, taken, skipped, missed, snoozed
+  takenAt      DateTime?
+  snoozedUntil DateTime?
+  notes        String?
+
+  @@index([userId, scheduledAt])
+  @@index([medicationId, scheduledAt])
+  @@index([status, scheduledAt])
+}
+
+model MedicationStock {
+  id                  String     @id @default(cuid())
+  medicationId        String     @unique
+  medication          Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  userId              String
+  user                User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  initialQuantity     Int        @default(0)
+  initialQty          Float?     @default(0)
+  remainingQty        Float      @default(0)
+  unit                String     @default("tablets")
+  refillThreshold     Int        @default(5)
+  refillThresholdDays Int?       @default(5)
+  lastRefillAt        DateTime?
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @default(now()) @updatedAt
+
+  @@index([userId])
+}
+
+model MedicationAllergy {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String   @default("")
+  saltName  String?
+  substance String?
+  severity  String?  // mild, moderate, severe
+  reaction  String?
+  notes     String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model DrugReference {
+  id               String  @id @default(cuid())
+  name             String  @default("")
+  brandName        String?
+  saltName         String  @default("")
+  activeIngredient String?
+  brands           String? // JSON array
+  commonUses       String?
+
+  @@index([saltName])
+}
+
+model MedicineDuplicateAlert {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicationAId String
+  medicationBId String
+  ingredient    String
+  acknowledged  Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+
+  @@index([userId])
+}
+
+model MedCheckin {
+  id           String     @id @default(cuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicationId String?
+  weekNumber   Int
+  feelingScore Int
+  sideEffects  String?
+  comparison   String?
+  adherence    Int?
+  createdAt    DateTime   @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model SubjectPermission {
+  id             String    @id @default(cuid())
+  actorUserId    String
+  targetUserId   String
+  user           User      @relation(fields: [actorUserId], references: [id], onDelete: Cascade)
+  permissionKey  String
+  scope          String    @default("FULL")
+  source         String
+  caregiverId    String?
+  doctorPatientId String?
+  expiresAt      DateTime?
+  revokedAt      DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@unique([actorUserId, targetUserId, permissionKey, source])
+  @@index([targetUserId, permissionKey])
+}
+
+// ============ CHECK-INS ============
+model CheckInQuestion {
+  id          String            @id @default(cuid())
+  code        String            @unique
+  text        String            @default("")
+  question    String            @default("")
+  type        String            // scale, yesno, choice, text
+  options     String?           // JSON
+  triggerRule String?
+  sortOrder   Int               @default(0)
+  active      Boolean           @default(true)
+  category    String            @default("base") // base, medication, condition, followup
+  responses   CheckInResponse[]
+}
+
+model CheckInResponse {
+  id         String           @id @default(cuid())
+  userId     String
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  checkInId  String?
+  checkIn    DailyCheckIn?    @relation(fields: [checkInId], references: [id], onDelete: Cascade)
+  questionId String
+  question   CheckInQuestion  @relation(fields: [questionId], references: [id])
+  value      String           @default("")
+  answer     String?
+  flag       String           @default("NORMAL")
+  answeredAt DateTime         @default(now())
+
+  @@index([userId, answeredAt])
+}
+
+model DailyCheckIn {
+  id          String            @id @default(cuid())
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        DateTime
+  completed   Boolean           @default(false)
+  completedAt DateTime?
+  moodScore   Int?
+  responses   CheckInResponse[]
+
+  @@unique([userId, date])
+}
+
+// ============ SIDE EFFECTS ============
+model SideEffect {
+  id           String      @id @default(cuid())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicationId String?
+  medication   Medication? @relation(fields: [medicationId], references: [id])
+  name         String
+  severity     String      // mild, moderate, severe
+  frequency    String?
+  onset        DateTime?
+  startedAt    DateTime?
+  duration     String?
+  description  String?
+  redFlag      Boolean     @default(false)
+  resolved     Boolean     @default(false)
+  resolvedAt   DateTime?
+  notes        String?
+  createdAt    DateTime    @default(now())
+
+  adrReports   ADRReport[]
+
+  @@index([userId, createdAt])
+}
+
+model ADRReport {
+  id           String      @id @default(cuid())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicationId String?
+  medication   Medication? @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  sideEffectId String?
+  sideEffect   SideEffect? @relation(fields: [sideEffectId], references: [id])
+  summary      String?
+  content      String?
+  status       String      @default("draft")
+  pdfUrl       String?
+  createdAt    DateTime    @default(now())
+
+  @@index([userId])
+}
+
+// ============ CONDITIONS & VITALS ============
+model Condition {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String    // diabetes, hypertension, cvd, kidney, respiratory, other
+  diagnosedAt DateTime?
+  notes       String?
+  createdAt   DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model VitalReading {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       String    // BP | GLUCOSE | WEIGHT | HEART_RATE | SPO2
+  value      Float?
+  unit       String    @default("")
+  systolic   Int?
+  diastolic  Int?
+  takenAt    DateTime  @default(now())
+  measuredAt DateTime? @default(now())
+  source     String    @default("MANUAL")
+  context    String?   // fasting, post_meal, resting
+
+  @@index([userId, type, takenAt])
+}
+
+// ============ EMERGENCY MEDICAL CARD ============
+model EmergencyMedicalCard {
+  id                 String               @id @default(cuid())
+  userId             String               @unique
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug               String               @unique
+  fields             String?
+  bloodGroup         String?
+  allergies          String?              // JSON
+  currentMedications String?              // JSON
+  conditions         String?              // JSON
+  importantInfo      String?
+  active             Boolean              @default(true)
+  revoked            Boolean              @default(false)
+  expiresAt          DateTime?
+  viewCount          Int                  @default(0)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  contacts           EmergencyContact[]
+  accessLogs         EmergencyAccessLog[]
+}
+
+model EmergencyContact {
+  id           String                @id @default(cuid())
+  userId       String?
+  user         User?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cardId       String?
+  card         EmergencyMedicalCard? @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  name         String
+  relation     String?
+  relationship String?
+  phone        String
+  priority     Int                   @default(1)
+  createdAt    DateTime              @default(now())
+
+  @@index([cardId])
+  @@index([userId])
+}
+
+model EmergencyAccessLog {
+  id         String               @id @default(cuid())
+  userId     String
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cardId     String
+  card       EmergencyMedicalCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  ip         String?
+  userAgent  String?
+  accessedAt DateTime             @default(now())
+
+  @@index([userId, accessedAt])
+  @@index([cardId, accessedAt])
+}
+
+// ============ NOTIFICATIONS & AUDIT ============
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  body      String
+  data      String?   // JSON
+  severity  String    @default("INFO") // INFO | WARNING | CRITICAL
+  read      Boolean   @default(false)
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, read, createdAt])
+}
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetUserId String?
+  action       String
+  entity       String?
+  entityId     String?
+  permission   String?
+  ip           String?
+  userAgent    String?
+  metadata     String?  // JSON
+  createdAt    DateTime @default(now())
+
+  @@index([action, createdAt])
+  @@index([userId, createdAt])
+}
+
+// ============ GOALS & TRACKING ============
+model HealthGoal {
+  id        String               @id @default(cuid())
+  userId    String
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String               // steps, water, sleep, weight, adherence
+  target    Float
+  unit      String
+  period    String               @default("DAILY")
+  status    String               @default("ACTIVE")
+  startDate DateTime             @default(now())
+  endDate   DateTime?
+
+  progress  HealthGoalProgress[]
+
+  @@index([userId, status])
+}
+
+model HealthGoalProgress {
+  id         String     @id @default(cuid())
+  userId     String
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goalId     String
+  goal       HealthGoal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  periodKey  String
+  achieved   Float
+  target     Float
+  hit        Boolean
+  recordedAt DateTime   @default(now())
+
+  @@unique([goalId, periodKey])
+}
+
+model UsageCounter {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  month  String // YYYY-MM
+  metric String
+  count  Int    @default(0)
+
+  @@unique([userId, month, metric])
+}
+
+// ============ SUBSCRIPTIONS & PAYMENTS ============
+model Subscription {
+  id               String    @id @default(cuid())
+  userId           String    @unique
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan             String    @default("FREE")
+  status           String    @default("ACTIVE")
+  provider         String    @default("mock")
+  providerSubId    String?
+  currentPeriodEnd DateTime?
+  createdAt        DateTime  @default(now())
+}
+
+model Payment {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscriptionId    String?
+  providerPaymentId String?
+  amount            Int
+  currency          String   @default("INR")
+  status            String   @default("CREATED")
+  method            String?
+  invoiceUrl        String?
+  createdAt         DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+// ============ GAMIFICATION ============
+model GamificationProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  points Int    @default(0)
+  level  Int    @default(1)
+  streak Int    @default(0)
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeCode String
+  name      String   @default("")
+  earnedAt  DateTime @default(now())
+
+  @@unique([userId, badgeCode])
+}
+
+// ============ FAMILY & CAREGIVERS ============
+model Family {
+  id        String         @id @default(cuid())
+  name      String
+  ownerId   String
+  owner     User           @relation("FamilyOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+
+  members   FamilyMember[]
+}
+
+model FamilyMember {
+  id        String   @id @default(cuid())
+  familyId  String
+  family    Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String   // self, parent, child, spouse, dependent
+  status    String   @default("ACTIVE")
+  joinedAt  DateTime @default(now())
+
+  @@unique([familyId, userId])
+}
+
+// ============ DOCTOR APPOINTMENTS & NOTES ============
+model DoctorProfile {
+  id                 String    @id @default(cuid())
+  userId             String    @unique
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  registrationNumber String
+  council            String?
+  specialization     String?
+  clinic             String?
+  verifiedAt         DateTime?
+}
+
+model DoctorNote {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patientId         String
+  body              String
+  sharedWithPatient Boolean  @default(true)
+  createdAt         DateTime @default(now())
+
+  @@index([userId, patientId])
+}
+
+model Appointment {
+  id          String   @id @default(cuid())
+  patientId   String
+  patient     User     @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId    String
+  doctor      User     @relation("DoctorAppointments", fields: [doctorId], references: [id], onDelete: Cascade)
+  scheduledAt DateTime
+  durationMin Int      @default(15)
+  reason      String?
+  status      String   @default("SCHEDULED")
+  createdAt   DateTime @default(now())
+
+  @@index([patientId, scheduledAt])
+  @@index([doctorId, scheduledAt])
+}
+
+// ============ WELLNESS PLANS ============
+model FitnessPlan {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal              String
+  fitnessLevel      String
+  daysPerWeek       Int
+  minutesPerSession Int
+  active            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+
+  @@index([userId, active])
+}
+
+model NutritionPlan {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  calorieTarget Int
+  proteinTarget Int
+  carbTarget    Int
+  fatTarget     Int
+  dietType      String
+  mealsPerDay   Int      @default(3)
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  @@index([userId, active])
+}
+
+model SleepPlan {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetDurationH Float
+  bedtime         String
+  wakeTime        String
+  caffeineCutoff  String
+  windDownMinutes Int
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+
+  @@index([userId, active])
+}
+
+// ============ WEARABLES & CANONICAL METRICS ============
+model HealthDataSource {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider    String    // google_health_connect, apple_health
+  status      String    @default("CONNECTED")
+  lastSyncAt  DateTime?
+  connectedAt DateTime  @default(now())
+
+  @@unique([userId, provider])
+}
+
+model HealthMetric {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String    // steps, sleep, hr, spo2, glucose, bp, ...
+  value     Float
+  unit      String
+  startTime DateTime
+  endTime   DateTime?
+  source    String
+  sourceId  String
+  metadata  String?
+  createdAt DateTime  @default(now())
+
+  @@unique([userId, type, source, sourceId])
+  @@index([userId, type, startTime])
+}
+
+// ============ VOICE LOGS & EXPORTS ============
+model VoiceLog {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  audioPath  String?
+  transcript String
+  intent     String?
+  parsedJson String?
+  confirmed  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model AIConversation {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String?
+  messages  String   // JSON
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model DataExportRequest {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  format      String    @default("json") // json, csv, pdf
+  status      String    @default("PENDING") // PENDING, READY, EXPIRED
+  downloadUrl String?
+  requestedAt DateTime  @default(now())
+  expiresAt   DateTime?
+
+  @@index([userId])
+}
+
+// ============ REMOTE PATIENT MONITORING (RPM) ============
+model RpmEnrollment {
+  id              String      @id @default(cuid())
+  patientId       String
+  patient         User        @relation("PatientRpm", fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId        String
+  doctor          User        @relation("DoctorRpm", fields: [doctorId], references: [id], onDelete: Cascade)
+  status          String      @default("ACTIVE") // ACTIVE, PAUSED, DISCHARGED
+  minSystolic     Int?        @default(90)
+  maxSystolic     Int?        @default(140)
+  minDiastolic    Int?        @default(60)
+  maxDiastolic    Int?        @default(90)
+  minGlucose      Int?        @default(70)
+  maxGlucose      Int?        @default(180)
+  minSpo2         Int?        @default(94)
+  notes           String?
+  enrolledAt      DateTime    @default(now())
+
+  alerts          RpmAlert[]
+  auditLogs       RpmAuditLog[]
+
+  @@index([doctorId, status])
+  @@index([patientId])
+}
+
+model RpmAlert {
+  id              String         @id @default(cuid())
+  enrollmentId    String
+  enrollment      RpmEnrollment  @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vitalType       String         // BP, GLUCOSE, SPO2, HEART_RATE
+  value           String
+  severity        String         // WARNING, CRITICAL
+  acknowledged    Boolean        @default(false)
+  acknowledgedAt  DateTime?
+  doctorNotes     String?
+  createdAt       DateTime       @default(now())
+
+  @@index([enrollmentId, acknowledged])
+}
+
+model RpmAuditLog {
+  id              String         @id @default(cuid())
+  enrollmentId    String
+  enrollment      RpmEnrollment  @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  doctorUserId    String
+  durationSeconds Int            @default(60)
+  activityType    String         // TELEMETRY_REVIEW, MED_TITRATION, CONSULTATION
+  notes           String?
+  loggedAt        DateTime       @default(now())
+
+  @@index([enrollmentId])
+}
+
+// ============ CORPORATE WELLNESS ============
+model Organization {
+  id              String               @id @default(cuid())
+  name            String
+  code            String               @unique
+  domain          String?
+  plan            String               @default("ENTERPRISE")
+  active          Boolean              @default(true)
+  createdAt       DateTime             @default(now())
+
+  members         OrgMember[]
+  challenges      WellnessChallenge[]
+}
+
+model OrgMember {
+  id              String               @id @default(cuid())
+  orgId           String
+  organization    Organization         @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department      String?
+  anonymizedId    String
+  shareAggregate  Boolean              @default(true)
+  joinedAt        DateTime             @default(now())
+
+  participations  ChallengeParticipant[]
+
+  @@unique([orgId, userId])
+  @@index([orgId])
+}
+
+model WellnessChallenge {
+  id              String               @id @default(cuid())
+  orgId           String
+  organization    Organization         @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  title           String
+  description     String?
+  type            String               // STEPS, HYDRATION, ACTIVE_MINUTES
+  targetValue     Float
+  startDate       DateTime
+  endDate         DateTime
+  active          Boolean              @default(true)
+
+  participants    ChallengeParticipant[]
+
+  @@index([orgId, active])
+}
+
+model ChallengeParticipant {
+  id              String               @id @default(cuid())
+  challengeId     String
+  challenge       WellnessChallenge    @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  memberId        String
+  member          OrgMember            @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  currentValue    Float                @default(0)
+  rank            Int                  @default(1)
+  completed       Boolean              @default(false)
+  updatedAt       DateTime             @updatedAt
+
+  @@unique([challengeId, memberId])
+}
+
+// ============ LAB PARTNERSHIPS ============
+model LabTestCatalog {
+  id              String         @id @default(cuid())
+  code            String         @unique
+  name            String
+  category        String         // DIABETIC_PROFILE, LIPID_PROFILE, CBC, THYROID, COMPLETE_CHECKUP
+  description     String?
+  sampleType      String         @default("BLOOD") // BLOOD, URINE
+  fastingRequired Boolean        @default(false)
+  partnerPriceInr Int
+  partnerLabs     String         // JSON array: ["Thyrocare", "SRL", "Dr Lal", "Apollo Diagnostics"]
+  active          Boolean        @default(true)
+
+  bookings        LabBooking[]
+}
+
+model LabBooking {
+  id              String         @id @default(cuid())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  testId          String
+  test            LabTestCatalog @relation(fields: [testId], references: [id])
+  partnerName     String         // Thyrocare | SRL | Apollo
+  scheduledDate   DateTime
+  timeSlot        String         // 07:00-09:00 AM, etc.
+  address         String
+  patientName     String
+  patientPhone    String
+  status          String         @default("BOOKED") // BOOKED, SAMPLE_COLLECTED, PROCESSING, COMPLETED, CANCELLED
+  reportFileId    String?
+  resultSummary   String?        // JSON summary of biomarkers
+  createdAt       DateTime       @default(now())
+
+  @@index([userId, status])
+}
+
+// ============ PHARMACY FULFILLMENT ============
+model PharmacyOrder {
+  id              String         @id @default(cuid())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  partnerName     String         // Tata 1mg, Apollo Pharmacy, Netmeds
+  prescriptionId  String?
+  items           String         // JSON array of { name, qty, dose }
+  deliveryAddress String
+  totalAmountInr  Int            @default(0)
+  status          String         @default("ORDER_PLACED") // ORDER_PLACED, DISPATCHED, OUT_FOR_DELIVERY, DELIVERED
+  trackingNumber  String?
+  createdAt       DateTime       @default(now())
+
+  @@index([userId, status])
+}
+
+// ============ DISEASE RISK ASSESSMENTS ============
+model DiseaseRiskAssessment {
+  id              String         @id @default(cuid())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type            String         // IDRS, FRAMINGHAM_CVD, METABOLIC
+  score           Float
+  category        String         // LOW, MODERATE, HIGH
+  riskPercent     Float?
+  factors         String         // JSON array or object of clinical inputs
+  recommendations String         // JSON list of non-prescriptive lifestyle targets
+  assessedAt      DateTime       @default(now())
+
+  @@index([userId, type])
+}
+

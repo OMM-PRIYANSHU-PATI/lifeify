@@ -1,0 +1,63 @@
+{
+  "id": "/",
+  "name": "LIFEIFY — Personal Health Operating System",
+  "short_name": "LIFEIFY",
+  "description": "Your entire health, organized in one place. Unified tracking, deterministic wellness plans, medication adherence, and emergency intelligence.",
+  "start_url": "/app/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FAFAF8",
+  "theme_color": "#0E7C6B",
+  "categories": ["health", "medical", "lifestyle", "fitness"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Daily Dashboard",
+      "short_name": "Dashboard",
+      "description": "View today's health score and regimen",
+      "url": "/app/dashboard",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Medications & Doses",
+      "short_name": "Meds",
+      "description": "Log doses and view adherence",
+      "url": "/app/medications",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Emergency Medical Card",
+      "short_name": "SOS Card",
+      "description": "Display emergency allergies, meds, and QR",
+      "url": "/app/emergency-card",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Health Analytics",
+      "short_name": "Analytics",
+      "description": "Review deterministic 12-domain telemetry",
+      "url": "/app/analytics",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

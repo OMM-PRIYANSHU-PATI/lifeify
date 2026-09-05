@@ -1,0 +1,24 @@
+node_modules/
+.next/
+out/
+uploads/*
+!uploads/.gitkeep
+storage/*
+!storage/**/.gitkeep
+.zcode/
+prisma/dev.db
+prisma/dev.db-journal
+*.tsbuildinfo
+next-env.d.ts
+.env
+.env.local
+.env.*.local
+.DS_Store
+
+# Android Build & IDE files
+.gradle/
+android/build/
+android/app/build/
+android/.idea/
+*.apk
+*.aab

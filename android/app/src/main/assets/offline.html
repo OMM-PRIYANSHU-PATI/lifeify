@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>LIFEIFY Android App — Offline</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: #FAFAF8; color: #17201D; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; text-align: center; }
+    .card { background: #FFFFFF; border: 1px solid #E8E6E1; border-radius: 28px; padding: 36px 24px; max-width: 380px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+    .icon { width: 72px; height: 72px; border-radius: 20px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; background: #0E7C6B; }
+    .icon svg { width: 44px; height: 44px; fill: #FFFFFF; }
+    h1 { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
+    p { font-size: 13px; color: #5E716B; line-height: 1.5; margin-bottom: 24px; }
+    .badge { display: inline-block; background: #E6F4F1; color: #0E7C6B; font-weight: 800; font-size: 11px; padding: 4px 14px; border-radius: 999px; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .btn { display: block; width: 100%; background: #0E7C6B; color: #FFFFFF; font-weight: 800; font-size: 14px; padding: 14px 20px; border-radius: 16px; border: none; cursor: pointer; text-decoration: none; margin-top: 10px; transition: background 0.2s; }
+    .btn:active { background: #0b6356; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+    </div>
+    <span class="badge">LIFEIFY Android App</span>
+    <h1>No Connection</h1>
+    <p>Please check your mobile data or Wi-Fi. LIFEIFY will automatically reconnect as soon as signal is restored.</p>
+    <button class="btn" onclick="window.location.reload()">Tap to Reconnect</button>
+  </div>
+</body>
+</html>

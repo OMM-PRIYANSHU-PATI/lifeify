@@ -1,0 +1,69 @@
+{
+  "common": {
+    "appName": "LIFEIFY",
+    "tagline": "હેલ્થકેર ફાઉન્ડેશન અને વેલનેસ ટ્રેકિંગ",
+    "save": "સાચવો",
+    "cancel": "રદ કરો",
+    "continue": "ચાલુ રાખો",
+    "back": "પાછા જાઓ",
+    "loading": "લોડ થઈ રહ્યું છે...",
+    "error": "ભૂલ આવી છે",
+    "success": "સફળ"
+  },
+  "auth": {
+    "login": "લોગ ઇન",
+    "signup": "સાઇન અપ",
+    "phone": "ફોન નંબર",
+    "otp": "ચકાસણી કોડ",
+    "sendOtp": "કોડ મોકલો",
+    "verifyOtp": "કોડ ચકાસો",
+    "resendOtp": "ફરીથી કોડ મોકલો"
+  },
+  "dashboard": {
+    "healthScore": "દૈનિક આરોગ્ય સ્કોર",
+    "medications": "દવાઓ",
+    "checkin": "દૈનિક ચેક-ઇન",
+    "streak": "નિયમિતતા"
+  },
+  "wearables": {
+    "title": "પહેરી શકાય તેવા ઉપકરણો",
+    "syncNow": "હમણાં સમન્વય કરો",
+    "disconnect": "ડિસ્કનેક્ટ કરો",
+    "googleHealth": "Google Health Connect",
+    "appleHealth": "Apple Health"
+  },
+  "plans": {
+    "title": "વ્યક્તિગત યોજનાઓ",
+    "fitness": "ફિટનેસ અને કસરત",
+    "nutrition": "પોષણ અને ભારતીય આહાર",
+    "sleep": "ઊંઘ અને આરામ"
+  },
+  "family": {
+    "title": "કુટુંબ અને સંભાળ રાખનારા",
+    "household": "કૌટુંબિક જૂથ",
+    "invite": "સભ્યને આમંત્રિત કરો",
+    "caregivers": "કેરગીવર ઍક્સેસ"
+  },
+  "doctor": {
+    "title": "ડૉક્ટર પરામર્શ",
+    "generateCode": "10-મિનિટનો કોડ બનાવો",
+    "clinicalNotes": "ક્લિનિકલ નોંધો"
+  },
+  "voice": {
+    "title": "વોઇસ હેલ્થ લોગિંગ",
+    "speak": "બોલવા માટે ટેપ કરો",
+    "confirm": "પુષ્ટિ કરો અને નોંધ કરો"
+  },
+  "subscription": {
+    "title": "સબ્સ્ક્રિપ્શન પ્લાન",
+    "free": "મફત સ્તર",
+    "premium": "પ્રીમિયમ હેલ્થકેર",
+    "upgrade": "Razorpay દ્વારા અપગ્રેડ કરો"
+  },
+  "privacy": {
+    "title": "ગોપનીયતા અને પરવાનગીઓ",
+    "audit": "સુરક્ષા ઓડિટ લોગ",
+    "export": "ડેટા ડાઉનલોડ કરો",
+    "delete": "એકાઉન્ટ કાઢી નાખો"
+  }
+}

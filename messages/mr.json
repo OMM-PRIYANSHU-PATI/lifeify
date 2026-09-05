@@ -1,0 +1,69 @@
+{
+  "common": {
+    "appName": "LIFEIFY",
+    "tagline": "आरोग्य फाउंडेशन आणि वेलनेस ट्रॅकिंग",
+    "save": "जतन करा",
+    "cancel": "रद्द करा",
+    "continue": "पुढे सुरू ठेवा",
+    "back": "मागे",
+    "loading": "लोड होत आहे...",
+    "error": "एक त्रुटी आली",
+    "success": "यशस्वी"
+  },
+  "auth": {
+    "login": "लॉगिन करा",
+    "signup": "साइन अप करा",
+    "phone": "फोन नंबर",
+    "otp": "पडताळणी कोड",
+    "sendOtp": "कोड पाठवा",
+    "verifyOtp": "कोड पडताळा",
+    "resendOtp": "पुन्हा कोड पाठवा"
+  },
+  "dashboard": {
+    "healthScore": "दैनिक आरोग्य गुण",
+    "medications": "औषधे",
+    "checkin": "दैनिक तपासणी",
+    "streak": "सातत्य"
+  },
+  "wearables": {
+    "title": "वेअरेबल्स आणि हेल्थ प्लॅटफॉर्म",
+    "syncNow": "आता सिंक करा",
+    "disconnect": "डिस्कनेक्ट करा",
+    "googleHealth": "Google Health Connect",
+    "appleHealth": "Apple Health"
+  },
+  "plans": {
+    "title": "वैयक्तिकृत योजना",
+    "fitness": "व्यायाम आणि तंदुरुस्ती",
+    "nutrition": "पोषण आणि भारतीय आहार",
+    "sleep": "झोप आणि विश्रांती"
+  },
+  "family": {
+    "title": "कुटुंब आणि काळजीवाहू",
+    "household": "कौटुंबिक गट",
+    "invite": "सदस्याला आमंत्रित करा",
+    "caregivers": "काळजीवाहू प्रवेश"
+  },
+  "doctor": {
+    "title": "डॉक्टरांचा सल्ला",
+    "generateCode": "१० मिनिटांचा कोड तयार करा",
+    "clinicalNotes": "क्लिनिकल नोट्स"
+  },
+  "voice": {
+    "title": "व्हॉइस हेल्थ लॉगिंग",
+    "speak": "बोलण्यासाठी टॅप करा",
+    "confirm": "पुष्टी करा आणि नोंदवा"
+  },
+  "subscription": {
+    "title": "सदस्यता योजना",
+    "free": "मोफत स्तर",
+    "premium": "प्रीमियम आरोग्यसेवा",
+    "upgrade": "Razorpay द्वारे अपग्रेड करा"
+  },
+  "privacy": {
+    "title": "गोपनीयता आणि परवानग्या",
+    "audit": "सुरक्षा ऑडिट लॉग",
+    "export": "माहिती डाउनलोड करा",
+    "delete": "खाते हटवा"
+  }
+}

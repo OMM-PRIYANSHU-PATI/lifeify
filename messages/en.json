@@ -1,0 +1,69 @@
+﻿{
+  "common": {
+    "appName": "LIFEIFY",
+    "tagline": "Healthcare Foundation & Wellness Tracking",
+    "save": "Save",
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "back": "Back",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success"
+  },
+  "auth": {
+    "login": "Log in",
+    "signup": "Sign up",
+    "phone": "Phone Number",
+    "otp": "Verification Code",
+    "sendOtp": "Send Code",
+    "verifyOtp": "Verify Code",
+    "resendOtp": "Resend Code"
+  },
+  "dashboard": {
+    "healthScore": "Daily Health Score",
+    "medications": "Medications",
+    "checkin": "Daily Check-in",
+    "streak": "Streak"
+  },
+  "wearables": {
+    "title": "Wearables & Health Platforms",
+    "syncNow": "Sync Now",
+    "disconnect": "Disconnect",
+    "googleHealth": "Google Health Connect",
+    "appleHealth": "Apple Health"
+  },
+  "plans": {
+    "title": "Personalized Wellness Plans",
+    "fitness": "Fitness & Workouts",
+    "nutrition": "Nutrition & Indian Meals",
+    "sleep": "Sleep & Circadian Rhythm"
+  },
+  "family": {
+    "title": "Family & Caregivers",
+    "household": "Family Household",
+    "invite": "Invite Member",
+    "caregivers": "Caregiver Access"
+  },
+  "doctor": {
+    "title": "Doctor Consultations",
+    "generateCode": "Generate 10-Minute Code",
+    "clinicalNotes": "Clinical Notes"
+  },
+  "voice": {
+    "title": "Voice Health Logging",
+    "speak": "Tap to Speak",
+    "confirm": "Confirm & Log"
+  },
+  "subscription": {
+    "title": "Subscription Plans",
+    "free": "Free Tier",
+    "premium": "Premium Healthcare",
+    "upgrade": "Upgrade via Razorpay"
+  },
+  "privacy": {
+    "title": "Privacy & Permissions Center",
+    "audit": "Security Audit Log",
+    "export": "Download Personal Data",
+    "delete": "Delete Account"
+  }
+}

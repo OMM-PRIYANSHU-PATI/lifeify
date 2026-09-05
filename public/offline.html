@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>LIFEIFY — Offline Mode</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#0E7C6B">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: #FAFAF8; color: #17201D; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; text-align: center; }
+    .card { background: #FFFFFF; border: 1px solid #E8E6E1; border-radius: 24px; padding: 32px 24px; max-width: 420px; width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+    .icon { width: 64px; height: 64px; border-radius: 16px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; background: rgba(14, 124, 107, 0.1); }
+    .icon svg { width: 36px; height: 36px; fill: #0E7C6B; }
+    h1 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+    p { font-size: 13px; color: #5E716B; line-height: 1.5; margin-bottom: 20px; }
+    .badge { display: inline-block; background: #E6F4F1; color: #0E7C6B; font-weight: 700; font-size: 11px; padding: 4px 12px; rounded: 9999px; border-radius: 999px; margin-bottom: 16px; }
+    .btn { display: inline-block; width: 100%; background: #0E7C6B; color: #FFFFFF; font-weight: 700; font-size: 14px; padding: 12px 20px; border-radius: 14px; border: none; cursor: pointer; text-decoration: none; margin-top: 8px; transition: background 0.2s; }
+    .btn:active { background: #0b6356; }
+    .btn-secondary { background: #F5F4F0; color: #17201D; margin-top: 10px; }
+    .emergency-box { background: #FFF5F5; border: 1px solid #FED7D7; border-radius: 16px; padding: 12px; margin-top: 20px; text-align: left; }
+    .emergency-title { font-size: 12px; font-weight: 700; color: #C53030; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .emergency-text { font-size: 11px; color: #742A2A; margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+      </svg>
+    </div>
+    <span class="badge">Offline Resiliency Active</span>
+    <h1>You're Offline</h1>
+    <p>LIFEIFY is caching your actions locally. Your logged doses, vitals, and health logs will automatically sync when connection returns.</p>
+    
+    <button class="btn" onclick="window.location.reload()">Retry Connection</button>
+    <a href="/app/emergency-card" class="btn btn-secondary">Open Emergency QR Card</a>
+
+    <div class="emergency-box">
+      <div class="emergency-title">🚨 Emergency Access</div>
+      <p class="emergency-text">Emergency Medical Card and saved doctor summaries remain available without an active internet connection.</p>
+    </div>
+  </div>
+</body>
+</html>
