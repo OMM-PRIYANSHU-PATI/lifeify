@@ -231,7 +231,7 @@ export function RiskAssessmentClient() {
                       </div>
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <span className="px-2.5 py-0.5 rounded-full text-xs font-black font-mono bg-surface border border-line text-ink">
-                          {idrsWaist} cm <span className="text-[10px] text-ink-muted font-normal">({(idrsWaist / 2.54).toFixed(0)}")</span>
+                          {idrsWaist} cm <span className="text-[10px] text-ink-muted font-normal">({(idrsWaist / 2.54).toFixed(0)} in)</span>
                         </span>
                         {matchedSize ? (
                           <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-soft text-primary-dark border border-primary/20">

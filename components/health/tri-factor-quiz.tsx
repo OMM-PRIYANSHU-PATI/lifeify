@@ -220,7 +220,7 @@ export function TriFactorQuiz({
 // Standalone Lightning Pulse
 function LightningQuizStandalone({
   onDone,
-  variant,
+  variant: _variant,
 }: {
   onDone?: () => void;
   variant?: "modal" | "inline";

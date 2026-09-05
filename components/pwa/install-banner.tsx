@@ -174,8 +174,8 @@ export function PwaInstallBanner() {
                 <Share className="w-3.5 h-3.5 text-primary" />
                 <span>at bottom</span>
               </li>
-              <li>2. Scroll down and tap <strong>"Add to Home Screen"</strong></li>
-              <li>3. Tap <strong>"Add"</strong> at top-right</li>
+              <li>2. Scroll down and tap <strong>&quot;Add to Home Screen&quot;</strong></li>
+              <li>3. Tap <strong>&quot;Add&quot;</strong> at top-right</li>
             </ol>
 
             <button

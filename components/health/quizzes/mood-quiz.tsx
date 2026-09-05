@@ -4,13 +4,7 @@ import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   evaluateDeepMoodQuest,
-  DeepMoodQuestAnswers,
-  BootupMindset,
-  CognitiveClarity,
-  SocialBattery,
-  StressTriggers,
-  InnerSelfTalk,
-  EnergyStability,
+  type DeepMoodQuestAnswers,
 } from "@/lib/rules/tri-factor-quiz";
 import { logMoodFromQuiz } from "@/lib/actions/logs";
 

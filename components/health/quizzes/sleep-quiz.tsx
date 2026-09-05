@@ -4,14 +4,7 @@ import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   evaluateDeepSleepQuest,
-  DeepSleepQuestAnswers,
-  BedtimeWindow,
-  DriftOffSpeed,
-  NightWakeups,
-  CaffeineCutoff,
-  ScreenWindDown,
-  BedroomClimate,
-  DreamRecall,
+  type DeepSleepQuestAnswers,
 } from "@/lib/rules/tri-factor-quiz";
 import { logSleepFromQuiz } from "@/lib/actions/logs";
 

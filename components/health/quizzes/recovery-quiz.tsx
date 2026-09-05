@@ -4,13 +4,7 @@ import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   evaluateDeepRecoveryQuest,
-  DeepRecoveryQuestAnswers,
-  WakeupTrigger,
-  BodyMobility,
-  AutonomicBreath,
-  SorenessZone,
-  HydrationAwakening,
-  PreviousDayStrain,
+  type DeepRecoveryQuestAnswers,
 } from "@/lib/rules/tri-factor-quiz";
 import { logRecoveryFromQuiz } from "@/lib/actions/logs";
 
