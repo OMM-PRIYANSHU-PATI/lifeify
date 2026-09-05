@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { SleepQuiz } from "@/components/health/quizzes/sleep-quiz";
 import { RecoveryQuiz } from "@/components/health/quizzes/recovery-quiz";
 import { MoodQuiz } from "@/components/health/quizzes/mood-quiz";
+import { MorningSimulation } from "@/components/health/quizzes/morning-simulation";
 import { evaluateLightningQuiz, LightningQuizAnswers } from "@/lib/rules/tri-factor-quiz";
 import { logTriFactorQuiz } from "@/lib/actions/logs";
 
-type ActiveQuiz = "hub" | "sleep" | "recovery" | "mood" | "lightning";
+type ActiveQuiz = "simulation" | "hub" | "sleep" | "recovery" | "mood" | "lightning";
 
 interface TriFactorQuizProps {
   onDone?: () => void;
@@ -19,9 +20,33 @@ interface TriFactorQuizProps {
 export function TriFactorQuiz({
   onDone,
   variant = "inline",
-  initialQuiz = "hub",
+  initialQuiz = "simulation",
 }: TriFactorQuizProps) {
   const [activeQuiz, setActiveQuiz] = useState<ActiveQuiz>(initialQuiz);
+
+  if (activeQuiz === "simulation") {
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <button
+            type="button"
+            onClick={() => setActiveQuiz("hub")}
+            className="text-xs font-semibold text-ink-muted hover:text-ink flex items-center gap-1"
+          >
+            ← View All Quizzes & Standalone Quests
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveQuiz("lightning")}
+            className="text-xs font-bold text-primary-dark hover:underline flex items-center gap-1"
+          >
+            ⚡ Fast 60s Pulse
+          </button>
+        </div>
+        <MorningSimulation onDone={onDone} variant={variant} />
+      </div>
+    );
+  }
 
   if (activeQuiz === "sleep") {
     return (
@@ -31,7 +56,7 @@ export function TriFactorQuiz({
           onClick={() => setActiveQuiz("hub")}
           className="text-xs font-semibold text-ink-muted hover:text-ink flex items-center gap-1 mb-1"
         >
-          ← Back to Quiz Selection Hub
+          ← Back to Assessment Hub
         </button>
         <SleepQuiz onDone={onDone} variant={variant} />
       </div>
@@ -46,7 +71,7 @@ export function TriFactorQuiz({
           onClick={() => setActiveQuiz("hub")}
           className="text-xs font-semibold text-ink-muted hover:text-ink flex items-center gap-1 mb-1"
         >
-          ← Back to Quiz Selection Hub
+          ← Back to Assessment Hub
         </button>
         <RecoveryQuiz onDone={onDone} variant={variant} />
       </div>
@@ -61,7 +86,7 @@ export function TriFactorQuiz({
           onClick={() => setActiveQuiz("hub")}
           className="text-xs font-semibold text-ink-muted hover:text-ink flex items-center gap-1 mb-1"
         >
-          ← Back to Quiz Selection Hub
+          ← Back to Assessment Hub
         </button>
         <MoodQuiz onDone={onDone} variant={variant} />
       </div>
@@ -76,7 +101,7 @@ export function TriFactorQuiz({
           onClick={() => setActiveQuiz("hub")}
           className="text-xs font-semibold text-ink-muted hover:text-ink flex items-center gap-1 mb-1"
         >
-          ← Back to Quiz Selection Hub
+          ← Back to Assessment Hub
         </button>
         <LightningQuizStandalone onDone={onDone} variant={variant} />
       </div>
@@ -93,15 +118,49 @@ export function TriFactorQuiz({
       <div className="flex items-center justify-between border-b border-line/60 pb-3">
         <div>
           <h2 className="text-base sm:text-lg font-black text-ink flex items-center gap-2">
-            <span>🎮</span> Health Quiz & Predictor Hub
+            <span>🎮</span> Health Assessments & Simulation Hub
           </h2>
           <p className="text-xs text-ink-muted mt-0.5">
-            Choose a dedicated assessment for Sleep, Recovery, Mood, or a quick 60-second pulse.
+            Take the guided 3-act morning simulation (Sleep ➔ Mood ➔ Recovery) or test individual parameters.
           </p>
         </div>
-        <span className="rounded-full bg-primary-soft px-2.5 py-1 text-[11px] font-extrabold text-primary-dark shrink-0">
-          Earn +25 XP
-        </span>
+      </div>
+
+      {/* FEATURED: MORNING SIMULATION (SLEEP -> MOOD -> RECOVERY) */}
+      <button
+        type="button"
+        onClick={() => setActiveQuiz("simulation")}
+        className="w-full rounded-2xl border-2 border-primary/50 bg-gradient-to-r from-primary-soft/40 via-surface to-emerald-50/30 dark:to-emerald-950/20 p-5 text-left transition-all hover:border-primary hover:shadow-md shadow-xs group"
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-2 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-black text-white uppercase tracking-wider">
+                Recommended Daily Flow
+              </span>
+              <span className="rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 px-2 py-0.5 text-[10px] font-black">
+                +50 XP Combo
+              </span>
+            </div>
+            <h3 className="text-base font-black text-ink group-hover:text-primary transition flex items-center gap-2">
+              <span>🌌</span> Guided Morning Simulation (Sleep ➔ Mood ➔ Recovery)
+            </h3>
+            <p className="text-xs text-ink-soft leading-relaxed">
+              Step through your night&apos;s sleep chronotype, morning mental clarity, and autonomic body readiness in a single connected 3-act journey.
+            </p>
+          </div>
+          <div className="shrink-0">
+            <span className="lif-btn-primary py-2.5 px-4 text-xs font-black whitespace-nowrap inline-flex items-center gap-1.5 shadow-sm">
+              Start Simulation ➔
+            </span>
+          </div>
+        </div>
+      </button>
+
+      <div className="pt-2">
+        <h4 className="text-xs font-bold text-ink uppercase tracking-wider mb-2.5">
+          Or Select Individual Quests & Pulse
+        </h4>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">

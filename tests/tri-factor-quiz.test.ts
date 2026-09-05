@@ -4,6 +4,7 @@ import {
   evaluateDeepSleepQuest,
   evaluateDeepMoodQuest,
   evaluateDeepRecoveryQuest,
+  evaluateMorningSimulation,
   predictTriFactor,
   predictFullHealthMatrix,
 } from "@/lib/rules/tri-factor-quiz";
@@ -80,7 +81,38 @@ describe("Dual-Mode Health Matrix & Deep Game-Field Quests", () => {
     expect(res.recommendedStrain).toContain("Maximal");
   });
 
-  // 5. BACKWARD COMPATIBILITY
+  // 5. GUIDED MORNING SIMULATION (Sleep -> Mood -> Recovery)
+  it("evaluates Guided Morning Simulation seamlessly across all 3 acts", () => {
+    const res = evaluateMorningSimulation({
+      // Act 1: Sleep
+      bedtimeWindow: "around_11",
+      driftOffSpeed: "peaceful",
+      nightWakeups: "none",
+      screenWindDown: "dim_book_60m",
+      // Act 2: Mood
+      bootupMindset: "excited_ready",
+      cognitiveClarity: "laser_4k",
+      socialBattery: "full_friendly",
+      stressTriggers: "minimal_smooth",
+      // Act 3: Recovery
+      bodyMobility: "limber_spring",
+      sorenessZone: "none",
+      autonomicBreath: "deep_calm",
+      previousDayStrain: "rest_day",
+    });
+
+    // Verify Sleep Act output
+    expect(res.sleepHours).toBeGreaterThanOrEqual(7.5);
+    expect(res.sleepEfficiency).toBeGreaterThanOrEqual(85);
+    // Verify Mood Act output
+    expect(res.moodScore).toBe(5);
+    expect(res.stressIndex).toBeLessThanOrEqual(25);
+    // Verify Recovery Act output
+    expect(res.recoveryScore).toBeGreaterThanOrEqual(80);
+    expect(res.recoveryStatus).toBe("PEAK_READINESS");
+  });
+
+  // 6. BACKWARD COMPATIBILITY
   it("maintains backward compatibility with legacy 4-parameter calls", () => {
     const res = predictTriFactor({
       wakeupVibe: "rocket",

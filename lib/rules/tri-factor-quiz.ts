@@ -443,3 +443,76 @@ export function predictTriFactor(answers: {
     suggestedFocus: "Prioritize consistent hydration and recovery pacing.",
   };
 }
+
+// ==========================================
+// 6. GUIDED MORNING SIMULATION (Sleep -> Mood -> Recovery)
+// ==========================================
+export interface MorningSimulationAnswers {
+  // Act 1: Sleep Chronology
+  bedtimeWindow: BedtimeWindow;
+  driftOffSpeed: DriftOffSpeed;
+  nightWakeups: NightWakeups;
+  screenWindDown: ScreenWindDown;
+  // Act 2: Morning Mindset & Mood
+  bootupMindset: BootupMindset;
+  cognitiveClarity: CognitiveClarity;
+  socialBattery: SocialBattery;
+  stressTriggers: StressTriggers;
+  // Act 3: Physical Body & Autonomic Recovery
+  bodyMobility: BodyMobility;
+  sorenessZone: SorenessZone;
+  autonomicBreath: AutonomicBreath;
+  previousDayStrain: PreviousDayStrain;
+}
+
+export function evaluateMorningSimulation(answers: MorningSimulationAnswers) {
+  const sleepRes = evaluateDeepSleepQuest({
+    bedtimeWindow: answers.bedtimeWindow,
+    driftOffSpeed: answers.driftOffSpeed,
+    nightWakeups: answers.nightWakeups,
+    caffeineCutoff: "before_2pm",
+    screenWindDown: answers.screenWindDown,
+    bedroomClimate: "cool_pitch_dark",
+    dreamRecall: "vivid_calm",
+  });
+
+  const moodRes = evaluateDeepMoodQuest({
+    bootupMindset: answers.bootupMindset,
+    cognitiveClarity: answers.cognitiveClarity,
+    socialBattery: answers.socialBattery,
+    stressTriggers: answers.stressTriggers,
+    innerSelfTalk: "neutral_pragmatic",
+    energyStability: "steady_flowing",
+  });
+
+  const recovRes = evaluateDeepRecoveryQuest({
+    wakeupTrigger: "gentle_alarm",
+    bodyMobility: answers.bodyMobility,
+    autonomicBreath: answers.autonomicBreath,
+    sorenessZone: answers.sorenessZone,
+    hydrationAwakening: "quenched_fresh",
+    previousDayStrain: answers.previousDayStrain,
+  });
+
+  return {
+    sleep: sleepRes,
+    mood: moodRes,
+    recovery: recovRes,
+    sleepHours: sleepRes.sleepHours,
+    sleepQuality: sleepRes.sleepQuality,
+    sleepEfficiency: sleepRes.sleepEfficiency,
+    sleepDebtStatus: sleepRes.sleepDebtStatus,
+    moodScore: moodRes.moodScore,
+    moodValence: moodRes.moodValence,
+    stressIndex: moodRes.stressIndex,
+    burnoutRisk: moodRes.burnoutRisk,
+    recoveryScore: recovRes.recoveryScore,
+    recoveryStatus: recovRes.recoveryStatus,
+    recoveryStatusLabel: recovRes.recoveryStatusLabel,
+    muscularTone: recovRes.muscularTone,
+    autonomicTone: recovRes.autonomicTone,
+    recommendedStrain: recovRes.recommendedStrain,
+    actionableAdvice: recovRes.actionableAdvice,
+  };
+}
+

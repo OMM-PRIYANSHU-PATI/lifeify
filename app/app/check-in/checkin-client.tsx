@@ -165,7 +165,7 @@ export function CheckInClient() {
               : "text-ink-soft hover:text-ink hover:bg-surface-subtle"
           }`}
         >
-          <span>🎮</span> Gamified Tri-Factor Oracle (Predicts Sleep, Mood & Recovery)
+          <span>🌌</span> Morning Simulation (Sleep ➔ Mood ➔ Recovery)
         </button>
         <button
           type="button"
@@ -184,7 +184,7 @@ export function CheckInClient() {
         <TriFactorQuiz
           onDone={() => {
             setCompleted(true);
-            setSuccessMsg("Tri-Factor predictions locked in! +20 XP awarded.");
+            setSuccessMsg("Morning Health Simulation locked in! +50 XP awarded.");
             loadCheckIn();
           }}
           variant="inline"
