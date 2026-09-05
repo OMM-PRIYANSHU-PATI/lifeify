@@ -19,6 +19,7 @@ import {
   type PreviousDayStrain,
 } from "@/lib/rules/tri-factor-quiz";
 import { logTriFactorQuiz } from "@/lib/actions/logs";
+import { submitQuizSafely } from "./save-quiz-helper";
 
 interface MorningSimulationProps {
   onDone?: () => void;
@@ -167,7 +168,7 @@ export function MorningSimulation({ onDone, variant = "inline" }: MorningSimulat
   const handleSave = () => {
     setErrorMsg("");
     startTransition(async () => {
-      const res = await logTriFactorQuiz({
+      const payload = {
         sleepHours: result.sleepHours,
         sleepQuality: result.sleepQuality,
         moodScore: result.moodScore,
@@ -188,14 +189,20 @@ export function MorningSimulation({ onDone, variant = "inline" }: MorningSimulat
           autonomicBreath: answers.autonomicBreath,
           previousDayStrain: answers.previousDayStrain,
         },
-      });
+      };
+
+      const res = await submitQuizSafely(
+        "simulation",
+        payload,
+        () => logTriFactorQuiz(payload)
+      );
 
       if (res.ok) {
         setCompleted(true);
         setSuccessMsg(res.message);
         router.refresh();
       } else {
-        setErrorMsg(res.error || "Failed to log simulation");
+        setErrorMsg(res.error || "Failed to log simulation. Please try again.");
       }
     });
   };

@@ -7,6 +7,7 @@ import {
   type DeepMoodQuestAnswers,
 } from "@/lib/rules/tri-factor-quiz";
 import { logMoodFromQuiz } from "@/lib/actions/logs";
+import { submitQuizSafely } from "./save-quiz-helper";
 
 interface MoodQuizProps {
   onDone?: () => void;
@@ -86,12 +87,18 @@ export function MoodQuiz({ onDone, variant = "inline" }: MoodQuizProps) {
   const handleSave = () => {
     setErrorMsg("");
     startTransition(async () => {
-      const res = await logMoodFromQuiz({
+      const payload = {
         score: result.moodScore,
         valence: result.moodValence,
         stressIndex: result.stressIndex,
         focus: result.mindsetNudge,
-      });
+      };
+
+      const res = await submitQuizSafely(
+        "mood",
+        payload,
+        () => logMoodFromQuiz(payload)
+      );
 
       if (res.ok) {
         setCompleted(true);
@@ -99,7 +106,7 @@ export function MoodQuiz({ onDone, variant = "inline" }: MoodQuizProps) {
         router.refresh();
         if (onDone) setTimeout(onDone, 1600);
       } else {
-        setErrorMsg(res.error ?? "Failed to save mood metrics");
+        setErrorMsg(res.error ?? "Failed to save mood metrics. Please try again.");
       }
     });
   };

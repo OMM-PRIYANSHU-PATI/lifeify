@@ -7,6 +7,7 @@ import {
   type DeepRecoveryQuestAnswers,
 } from "@/lib/rules/tri-factor-quiz";
 import { logRecoveryFromQuiz } from "@/lib/actions/logs";
+import { submitQuizSafely } from "./save-quiz-helper";
 
 interface RecoveryQuizProps {
   onDone?: () => void;
@@ -85,13 +86,19 @@ export function RecoveryQuiz({ onDone, variant = "inline" }: RecoveryQuizProps) 
   const handleSave = () => {
     setErrorMsg("");
     startTransition(async () => {
-      const res = await logRecoveryFromQuiz({
+      const payload = {
         score: result.recoveryScore,
         status: result.recoveryStatus,
         muscularTone: result.muscularTone,
         autonomicTone: result.autonomicTone,
         strain: result.recommendedStrain,
-      });
+      };
+
+      const res = await submitQuizSafely(
+        "recovery",
+        payload,
+        () => logRecoveryFromQuiz(payload)
+      );
 
       if (res.ok) {
         setCompleted(true);
@@ -99,7 +106,7 @@ export function RecoveryQuiz({ onDone, variant = "inline" }: RecoveryQuizProps) 
         router.refresh();
         if (onDone) setTimeout(onDone, 1600);
       } else {
-        setErrorMsg(res.error ?? "Failed to save recovery metrics");
+        setErrorMsg(res.error ?? "Failed to save recovery metrics. Please try again.");
       }
     });
   };

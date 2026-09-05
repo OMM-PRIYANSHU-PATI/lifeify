@@ -7,6 +7,7 @@ import {
   type DeepSleepQuestAnswers,
 } from "@/lib/rules/tri-factor-quiz";
 import { logSleepFromQuiz } from "@/lib/actions/logs";
+import { submitQuizSafely } from "./save-quiz-helper";
 
 interface SleepQuizProps {
   onDone?: () => void;
@@ -97,14 +98,20 @@ export function SleepQuiz({ onDone, variant = "inline" }: SleepQuizProps) {
     setErrorMsg("");
     startTransition(async () => {
       const finalHours = customHours ?? result.sleepHours;
-      const res = await logSleepFromQuiz({
+      const payload = {
         hours: finalHours,
         quality: result.sleepQuality,
         efficiency: result.sleepEfficiency,
         deepScore: result.deepSleepScore,
         debtStatus: result.sleepDebtStatus,
         tips: result.personalizedSleepTips,
-      });
+      };
+
+      const res = await submitQuizSafely(
+        "sleep",
+        payload,
+        () => logSleepFromQuiz(payload)
+      );
 
       if (res.ok) {
         setCompleted(true);
@@ -112,7 +119,7 @@ export function SleepQuiz({ onDone, variant = "inline" }: SleepQuizProps) {
         router.refresh();
         if (onDone) setTimeout(onDone, 1600);
       } else {
-        setErrorMsg(res.error ?? "Failed to save sleep metrics");
+        setErrorMsg(res.error ?? "Failed to save sleep metrics. Please try again.");
       }
     });
   };

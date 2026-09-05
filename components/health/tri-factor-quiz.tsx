@@ -6,8 +6,9 @@ import { SleepQuiz } from "@/components/health/quizzes/sleep-quiz";
 import { RecoveryQuiz } from "@/components/health/quizzes/recovery-quiz";
 import { MoodQuiz } from "@/components/health/quizzes/mood-quiz";
 import { MorningSimulation } from "@/components/health/quizzes/morning-simulation";
-import { evaluateLightningQuiz, LightningQuizAnswers } from "@/lib/rules/tri-factor-quiz";
+import { evaluateLightningQuiz, type LightningQuizAnswers } from "@/lib/rules/tri-factor-quiz";
 import { logTriFactorQuiz } from "@/lib/actions/logs";
+import { submitQuizSafely } from "./quizzes/save-quiz-helper";
 
 type ActiveQuiz = "simulation" | "hub" | "sleep" | "recovery" | "mood" | "lightning";
 
@@ -298,14 +299,20 @@ function LightningQuizStandalone({
 
   const handleSave = () => {
     startTransition(async () => {
-      const res = await logTriFactorQuiz({
+      const payload = {
         sleepHours: result.sleepHours,
         sleepQuality: result.sleepQuality,
         moodScore: result.moodScore,
         moodValence: result.moodValence,
         recoveryScore: result.recoveryScore,
         recoveryStatus: result.recoveryStatus,
-      });
+      };
+
+      const res = await submitQuizSafely(
+        "lightning",
+        payload,
+        () => logTriFactorQuiz(payload)
+      );
 
       if (res.ok) {
         setCompleted(true);
@@ -352,7 +359,7 @@ function LightningQuizStandalone({
               <button
                 key={o.id}
                 onClick={() => {
-                  setAnswers((p) => ({ ...p, nightFeeling: o.id as any }));
+                  setAnswers((p: LightningQuizAnswers) => ({ ...p, nightFeeling: o.id as any }));
                   setStep(2);
                 }}
                 className={`p-3 rounded-xl border text-left flex items-center gap-3 transition ${
@@ -383,7 +390,7 @@ function LightningQuizStandalone({
               <button
                 key={o.id}
                 onClick={() => {
-                  setAnswers((p) => ({ ...p, morningEnergy: o.id as any }));
+                  setAnswers((p: LightningQuizAnswers) => ({ ...p, morningEnergy: o.id as any }));
                   setStep(3);
                 }}
                 className={`p-3 rounded-xl border text-left flex items-center gap-3 transition ${
@@ -414,7 +421,7 @@ function LightningQuizStandalone({
               <button
                 key={o.id}
                 onClick={() => {
-                  setAnswers((p) => ({ ...p, mindsetAura: o.id as any }));
+                  setAnswers((p: LightningQuizAnswers) => ({ ...p, mindsetAura: o.id as any }));
                   handleSave();
                 }}
                 disabled={pending}

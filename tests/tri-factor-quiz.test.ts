@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   evaluateLightningQuiz,
   evaluateDeepSleepQuest,
@@ -125,4 +125,33 @@ describe("Dual-Mode Health Matrix & Deep Game-Field Quests", () => {
     expect(res.moodScore).toBe(5);
     expect(res.recoveryScore).toBeGreaterThanOrEqual(85);
   });
+
+  // 7. FAILSAFE QUIZ SUBMISSION (Server Action Desync Resiliency)
+  it("falls back to REST API gracefully when a server action rejects or desyncs", async () => {
+    const { submitQuizSafely } = await import("@/components/health/quizzes/save-quiz-helper");
+    
+    // Mock fetch for REST API fallback
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ ok: true, message: "Logged successfully via REST fallback" }),
+    });
+    global.fetch = mockFetch as any;
+
+    // Simulate Server Action throwing 'UnrecognizedActionError'
+    const failingServerAction = vi.fn().mockRejectedValue(
+      new Error('Server Action "4008f08829fd30ebb4d16735a812863bfa626bd374" was not found on the server.')
+    );
+
+    const result = await submitQuizSafely(
+      "simulation",
+      { sleepHours: 8, moodScore: 5, recoveryScore: 90 },
+      failingServerAction
+    );
+
+    expect(failingServerAction).toHaveBeenCalledTimes(1);
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(result.ok).toBe(true);
+    expect(result.message).toBe("Logged successfully via REST fallback");
+  });
 });
+
