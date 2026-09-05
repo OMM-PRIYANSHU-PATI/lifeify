@@ -52,6 +52,86 @@ export function MorningSimulation({ onDone, variant = "inline" }: MorningSimulat
     previousDayStrain: "moderate_active",
   });
 
+  const [showReviewPanel, setShowReviewPanel] = useState(true);
+
+  const answerLabels = {
+    bedtimeWindow: {
+      pre_1030: "Early Haven (Before 10:30 PM)",
+      around_11: "Standard Rhythm (10:30–11:30 PM)",
+      midnight: "Midnight Drift (11:30 PM–1:00 AM)",
+      late_night: "Late Night Owl (1:00–2:30 AM)",
+      wee_hours: "Wee Hours Shift (After 2:30 AM)",
+    },
+    driftOffSpeed: {
+      instant: "Out Like a Light (< 10 mins)",
+      peaceful: "Peaceful Drift (15–25 mins)",
+      racing_mind: "Racing Thoughts (30–60 mins)",
+      insomnia_toss: "Insomnia Tossing (> 60 mins)",
+    },
+    nightWakeups: {
+      none: "Zero Wakeups (Unbroken)",
+      one_brief: "1 Brief Wakeup",
+      tossed_2_3: "2–3 Choppy Interruptions",
+      wide_awake_gap: "Wide Awake Gap (45+ mins)",
+      restless_storm: "Restless Storm All Night",
+    },
+    screenWindDown: {
+      dim_book_60m: "Dim Book / Music (60m+)",
+      short_check_15m: "Brief Screen Check (15m)",
+      scrolled_in_bed: "Scrolled in Bed Till Sleepy",
+      tv_sleep_timer: "TV on Sleep Timer",
+    },
+    bootupMindset: {
+      excited_ready: "Excited & Driven (High Drive)",
+      calm_grounded: "Calm & Centered (Equilibrium)",
+      overwhelmed_todos: "Suffocated by To-Dos",
+      stormy_drained: "Heavy & Emotionally Drained",
+    },
+    cognitiveClarity: {
+      laser_4k: "4K Laser Focus (Crystal Clear)",
+      steady_coffee: "Steady Baseline (Functional)",
+      foggy_scattered: "Hazy Brain Fog (Scattered)",
+      spaced_out: "Zoned Out / Glitchy",
+    },
+    socialBattery: {
+      full_friendly: "Full & Magnetic (High Empathy)",
+      selective_peace: "Polite & Selective (Quiet)",
+      headphones_on: "Solo Mode (Do Not Disturb)",
+      irritable_short: "Short Fuse / Sensitive",
+    },
+    stressTriggers: {
+      minimal_smooth: "Minimal Pressure (Smooth Sailing)",
+      deadline_pressure: "Deadlines / Workload Rush",
+      interpersonal_friction: "Interpersonal Friction",
+      health_body_anxiety: "Health & Somatic Body Tension",
+      chronic_burnout: "Chronic Multitasking & Burnout",
+    },
+    bodyMobility: {
+      limber_spring: "Limber & Springy",
+      steady_normal: "Healthy Normal Baseline",
+      heavy_achy: "Heavy, Stiff & Sluggish",
+      deep_exhaustion: "Deep Systemic Soreness",
+    },
+    sorenessZone: {
+      none: "Zero Muscle Soreness",
+      neck_shoulders: "Neck & Upper Trapezius",
+      lower_back: "Lower Back / Lumbar",
+      legs_glutes: "Legs, Hamstrings & Glutes",
+      full_body_tender: "Full Body Tender / Aching",
+    },
+    autonomicBreath: {
+      deep_calm: "Deep, Slow & Effortless (High Vagal)",
+      steady_even: "Steady Baseline Rhythm",
+      fluttery_tight: "Elevated / Chest Tightness",
+    },
+    previousDayStrain: {
+      rest_day: "Rest & Sedentary",
+      moderate_active: "Active Day (7k–10k steps)",
+      brutal_intense: "Heavy Workout / Long Run",
+      poor_recovery_cycle: "Multi-Day Stacked Fatigue",
+    },
+  };
+
   const result = evaluateMorningSimulation(answers);
   const totalQuestions = 12;
   const isReveal = step > totalQuestions;
@@ -147,47 +227,114 @@ export function MorningSimulation({ onDone, variant = "inline" }: MorningSimulat
         </span>
       </div>
 
-      {/* 3-Act Sequential Roadmap */}
+      {/* 3-Act Sequential Roadmap (Clickable to jump) */}
       <div className="grid grid-cols-3 gap-2 text-center text-xs font-bold">
-        <div
-          className={`p-2 rounded-xl border transition ${
+        <button
+          type="button"
+          onClick={() => setStep(1)}
+          className={`p-2 rounded-xl border transition cursor-pointer text-left sm:text-center ${
             step <= 4
               ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-500 text-indigo-700 dark:text-indigo-300 ring-2 ring-indigo-500/20"
-              : step > 4
-              ? "bg-surface border-line text-emerald-600 line-through opacity-70"
-              : "bg-surface border-line text-ink-muted"
+              : "bg-surface border-line text-ink-soft hover:bg-surface-subtle"
           }`}
+          title="Click to jump to Act 1: Sleep"
         >
-          <span>🌙 Act 1: Sleep</span>
-          <span className="block text-[10px] font-normal text-ink-muted">Q1–Q4</span>
-        </div>
+          <span className="block font-black">🌙 Act 1: Sleep</span>
+          <span className="block text-[10px] font-normal text-ink-muted">Q1–Q4 · Edit ✏️</span>
+        </button>
 
-        <div
-          className={`p-2 rounded-xl border transition ${
+        <button
+          type="button"
+          onClick={() => setStep(5)}
+          className={`p-2 rounded-xl border transition cursor-pointer text-left sm:text-center ${
             step >= 5 && step <= 8
               ? "bg-amber-50 dark:bg-amber-950/40 border-amber-500 text-amber-700 dark:text-amber-300 ring-2 ring-amber-500/20"
-              : step > 8
-              ? "bg-surface border-line text-emerald-600 line-through opacity-70"
-              : "bg-surface border-line text-ink-muted"
+              : "bg-surface border-line text-ink-soft hover:bg-surface-subtle"
           }`}
+          title="Click to jump to Act 2: Mood"
         >
-          <span>☀️ Act 2: Mood</span>
-          <span className="block text-[10px] font-normal text-ink-muted">Q5–Q8</span>
-        </div>
+          <span className="block font-black">☀️ Act 2: Mood</span>
+          <span className="block text-[10px] font-normal text-ink-muted">Q5–Q8 · Edit ✏️</span>
+        </button>
 
-        <div
-          className={`p-2 rounded-xl border transition ${
+        <button
+          type="button"
+          onClick={() => setStep(9)}
+          className={`p-2 rounded-xl border transition cursor-pointer text-left sm:text-center ${
             step >= 9 && step <= 12
               ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-700 dark:text-emerald-300 ring-2 ring-emerald-500/20"
               : step > 12
               ? "bg-surface border-line text-emerald-600 font-black"
-              : "bg-surface border-line text-ink-muted"
+              : "bg-surface border-line text-ink-soft hover:bg-surface-subtle"
           }`}
+          title="Click to jump to Act 3: Recovery"
         >
-          <span>💚 Act 3: Recovery</span>
-          <span className="block text-[10px] font-normal text-ink-muted">Q9–Q12</span>
-        </div>
+          <span className="block font-black">💚 Act 3: Recovery</span>
+          <span className="block text-[10px] font-normal text-ink-muted">Q9–Q12 · Edit ✏️</span>
+        </button>
       </div>
+
+      {/* Question Pill Navigator (Jump & Change Any Question) */}
+      <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 text-xs">
+        <div className="flex items-center gap-1">
+          {Array.from({ length: totalQuestions }, (_, i) => i + 1).map((qNum) => {
+            const isCurrent = step === qNum;
+            const actColor =
+              qNum <= 4
+                ? isCurrent
+                  ? "bg-indigo-600 text-white shadow-xs"
+                  : "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200"
+                : qNum <= 8
+                ? isCurrent
+                  ? "bg-amber-600 text-white shadow-xs"
+                  : "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200"
+                : isCurrent
+                ? "bg-emerald-600 text-white shadow-xs"
+                : "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200";
+
+            return (
+              <button
+                key={qNum}
+                type="button"
+                onClick={() => setStep(qNum)}
+                className={`h-6 min-w-6 px-1.5 rounded-md text-[10px] font-black transition cursor-pointer ${actColor}`}
+                title={`Jump to Question ${qNum}`}
+              >
+                Q{qNum}
+              </button>
+            );
+          })}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setStep(13)}
+          className={`h-6 px-2.5 rounded-md text-[10px] font-black transition whitespace-nowrap cursor-pointer ${
+            isReveal
+              ? "bg-primary text-white shadow-xs"
+              : "bg-surface border border-line text-ink hover:bg-surface-subtle"
+          }`}
+          title="Jump to Results & Review Screen"
+        >
+          📋 Results & Review
+        </button>
+      </div>
+
+      {/* Return to Review Shortcut Banner when Editing */}
+      {!isReveal && (
+        <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-surface-subtle border border-line text-[11px]">
+          <span className="text-ink-soft">
+            Currently answering <strong>Question {step}</strong>. Tap any choice below to update.
+          </span>
+          <button
+            type="button"
+            onClick={() => setStep(13)}
+            className="font-bold text-primary hover:underline whitespace-nowrap ml-2"
+          >
+            Review All Answers ➔
+          </button>
+        </div>
+      )}
 
       {/* Act Transition Banner */}
       {transitionBanner && (
@@ -835,6 +982,247 @@ export function MorningSimulation({ onDone, variant = "inline" }: MorningSimulat
                 {result.autonomicTone}
               </p>
             </div>
+          </div>
+
+          {/* Review & Edit Answers Section */}
+          <div className="rounded-2xl border border-line bg-surface p-4 sm:p-5 shadow-xs space-y-4">
+            <div className="flex items-center justify-between border-b border-line pb-2.5">
+              <div>
+                <h4 className="text-sm font-black text-ink flex items-center gap-1.5">
+                  <span>📋</span> Review & Change Answers ({totalQuestions} Selected)
+                </h4>
+                <p className="text-[11px] text-ink-muted">
+                  Tap &quot;Change ✏️&quot; on any question to update your answers in real-time.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowReviewPanel(!showReviewPanel)}
+                className="text-xs font-bold text-primary hover:underline cursor-pointer"
+              >
+                {showReviewPanel ? "Collapse ▲" : "Expand ▼"}
+              </button>
+            </div>
+
+            {showReviewPanel && (
+              <div className="space-y-4 text-xs">
+                {/* Act 1: Sleep */}
+                <div className="space-y-2">
+                  <span className="font-extrabold text-[11px] uppercase tracking-wider text-indigo-700 dark:text-indigo-400 block">
+                    🌙 Act 1: Sleep Chrono
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="p-2.5 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                      <div className="truncate">
+                        <span className="text-[10px] text-ink-muted block">Q1: Bedtime Window</span>
+                        <span className="font-bold text-ink truncate block">
+                          {answerLabels.bedtimeWindow[answers.bedtimeWindow]}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setStep(1)}
+                        className="text-[11px] font-extrabold text-indigo-600 hover:text-indigo-800 shrink-0 px-2 py-1 rounded-md bg-indigo-50 dark:bg-indigo-950/50 cursor-pointer"
+                      >
+                        Change ✏️
+                      </button>
+                    </div>
+
+                    <div className="p-2.5 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                      <div className="truncate">
+                        <span className="text-[10px] text-ink-muted block">Q2: Drift-off Speed</span>
+                        <span className="font-bold text-ink truncate block">
+                          {answerLabels.driftOffSpeed[answers.driftOffSpeed]}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setStep(2)}
+                        className="text-[11px] font-extrabold text-indigo-600 hover:text-indigo-800 shrink-0 px-2 py-1 rounded-md bg-indigo-50 dark:bg-indigo-950/50 cursor-pointer"
+                      >
+                        Change ✏️
+                      </button>
+                    </div>
+
+                    <div className="p-2.5 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                      <div className="truncate">
+                        <span className="text-[10px] text-ink-muted block">Q3: Night Wakeups</span>
+                        <span className="font-bold text-ink truncate block">
+                          {answerLabels.nightWakeups[answers.nightWakeups]}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setStep(3)}
+                        className="text-[11px] font-extrabold text-indigo-600 hover:text-indigo-800 shrink-0 px-2 py-1 rounded-md bg-indigo-50 dark:bg-indigo-950/50 cursor-pointer"
+                      >
+                        Change ✏️
+                      </button>
+                    </div>
+
+                    <div className="p-2.5 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                      <div className="truncate">
+                        <span className="text-[10px] text-ink-muted block">Q4: Screen Wind-down</span>
+                        <span className="font-bold text-ink truncate block">
+                          {answerLabels.screenWindDown[answers.screenWindDown]}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setStep(4)}
+                        className="text-[11px] font-extrabold text-indigo-600 hover:text-indigo-800 shrink-0 px-2 py-1 rounded-md bg-indigo-50 dark:bg-indigo-950/50 cursor-pointer"
+                      >
+                        Change ✏️
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Act 2: Mood */}
+                <div className="space-y-2">
+                  <span className="font-extrabold text-[11px] uppercase tracking-wider text-amber-700 dark:text-amber-400 block">
+                    ☀️ Act 2: Morning Mindset & Mood
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="p-2.5 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                      <div className="truncate">
+                        <span className="text-[10px] text-ink-muted block">Q5: Bootup Mindset</span>
+                        <span className="font-bold text-ink truncate block">
+                          {answerLabels.bootupMindset[answers.bootupMindset]}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setStep(5)}
+                        className="text-[11px] font-extrabold text-amber-600 hover:text-amber-800 shrink-0 px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-950/50 cursor-pointer"
+                      >
+                        Change ✏️
+                      </button>
+                    </div>
+
+                    <div className="p-2.5 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                      <div className="truncate">
+                        <span className="text-[10px] text-ink-muted block">Q6: Cognitive Clarity</span>
+                        <span className="font-bold text-ink truncate block">
+                          {answerLabels.cognitiveClarity[answers.cognitiveClarity]}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setStep(6)}
+                        className="text-[11px] font-extrabold text-amber-600 hover:text-amber-800 shrink-0 px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-950/50 cursor-pointer"
+                      >
+                        Change ✏️
+                      </button>
+                    </div>
+
+                    <div className="p-2.5 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                      <div className="truncate">
+                        <span className="text-[10px] text-ink-muted block">Q7: Social Battery</span>
+                        <span className="font-bold text-ink truncate block">
+                          {answerLabels.socialBattery[answers.socialBattery]}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setStep(7)}
+                        className="text-[11px] font-extrabold text-amber-600 hover:text-amber-800 shrink-0 px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-950/50 cursor-pointer"
+                      >
+                        Change ✏️
+                      </button>
+                    </div>
+
+                    <div className="p-2.5 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                      <div className="truncate">
+                        <span className="text-[10px] text-ink-muted block">Q8: Stress Triggers</span>
+                        <span className="font-bold text-ink truncate block">
+                          {answerLabels.stressTriggers[answers.stressTriggers]}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setStep(8)}
+                        className="text-[11px] font-extrabold text-amber-600 hover:text-amber-800 shrink-0 px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-950/50 cursor-pointer"
+                      >
+                        Change ✏️
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Act 3: Recovery */}
+                <div className="space-y-2">
+                  <span className="font-extrabold text-[11px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block">
+                    💚 Act 3: Body Recovery & Nervous System
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="p-2.5 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                      <div className="truncate">
+                        <span className="text-[10px] text-ink-muted block">Q9: Body Mobility</span>
+                        <span className="font-bold text-ink truncate block">
+                          {answerLabels.bodyMobility[answers.bodyMobility]}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setStep(9)}
+                        className="text-[11px] font-extrabold text-emerald-600 hover:text-emerald-800 shrink-0 px-2 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/50 cursor-pointer"
+                      >
+                        Change ✏️
+                      </button>
+                    </div>
+
+                    <div className="p-2.5 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                      <div className="truncate">
+                        <span className="text-[10px] text-ink-muted block">Q10: Soreness Zone</span>
+                        <span className="font-bold text-ink truncate block">
+                          {answerLabels.sorenessZone[answers.sorenessZone]}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setStep(10)}
+                        className="text-[11px] font-extrabold text-emerald-600 hover:text-emerald-800 shrink-0 px-2 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/50 cursor-pointer"
+                      >
+                        Change ✏️
+                      </button>
+                    </div>
+
+                    <div className="p-2.5 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                      <div className="truncate">
+                        <span className="text-[10px] text-ink-muted block">Q11: Autonomic Breath</span>
+                        <span className="font-bold text-ink truncate block">
+                          {answerLabels.autonomicBreath[answers.autonomicBreath]}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setStep(11)}
+                        className="text-[11px] font-extrabold text-emerald-600 hover:text-emerald-800 shrink-0 px-2 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/50 cursor-pointer"
+                      >
+                        Change ✏️
+                      </button>
+                    </div>
+
+                    <div className="p-2.5 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                      <div className="truncate">
+                        <span className="text-[10px] text-ink-muted block">Q12: Previous Strain</span>
+                        <span className="font-bold text-ink truncate block">
+                          {answerLabels.previousDayStrain[answers.previousDayStrain]}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setStep(12)}
+                        className="text-[11px] font-extrabold text-emerald-600 hover:text-emerald-800 shrink-0 px-2 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/50 cursor-pointer"
+                      >
+                        Change ✏️
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Actionable Advice */}

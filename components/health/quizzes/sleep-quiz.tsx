@@ -32,6 +32,54 @@ export function SleepQuiz({ onDone, variant = "inline" }: SleepQuizProps) {
   });
 
   const [customHours, setCustomHours] = useState<number | null>(null);
+  const [showReviewList, setShowReviewList] = useState(true);
+
+  const sleepLabels = {
+    bedtimeWindow: {
+      pre_1030: "Early Haven (9:30 – 10:30 PM)",
+      around_11: "Standard Rhythm (10:30 – 11:30 PM)",
+      midnight: "Midnight Drift (11:30 PM – 12:45 AM)",
+      late_night: "Late Night Owl (12:45 – 2:00 AM)",
+      wee_hours: "Wee Hours (After 2:00 AM)",
+    },
+    driftOffSpeed: {
+      instant: "Out Like a Light (< 10 mins)",
+      peaceful: "Peaceful Drift (15–25 mins)",
+      racing_mind: "Racing Thoughts (30–60 mins)",
+      insomnia_toss: "Insomnia Tossing (> 60 mins)",
+    },
+    nightWakeups: {
+      none: "Zero Awakenings (Unbroken)",
+      one_brief: "Woke Up Once",
+      tossed_2_3: "Choppy (2–3 wakeups)",
+      wide_awake_gap: "Wide Awake Gap (45+ mins)",
+      restless_storm: "Restless Storm All Night",
+    },
+    caffeineCutoff: {
+      before_2pm: "Before 2:00 PM",
+      late_afternoon: "Late Afternoon (3–5 PM)",
+      with_dinner: "With Dinner (6–8 PM)",
+      late_night: "Late Evening (After 8 PM)",
+    },
+    screenWindDown: {
+      dim_book_60m: "Dim Light / Reading (60m+)",
+      short_check_15m: "Short Screen Check (15m)",
+      scrolled_in_bed: "Scrolled in Bed Till Sleepy",
+      tv_sleep_timer: "TV on Sleep Timer",
+    },
+    bedroomClimate: {
+      cool_pitch_dark: "Cool & Pitch Black (< 20°C / 68°F)",
+      normal: "Normal Comfortable Room",
+      warm_stuffy: "Warm, Stuffy, or Humid",
+      noisy_street: "Street Noise or Light Leaks",
+    },
+    dreamRecall: {
+      vivid_calm: "Vivid, Pleasant, Cinematic",
+      faint_pleasant: "Faint Pleasant Memories",
+      stress_nightmares: "Stress Dreams or Nightmares",
+      blank_blackout: "Total Blank / Deep Blackout",
+    },
+  };
 
   const result = evaluateDeepSleepQuest(answers);
   const totalSteps = 7;
@@ -106,6 +154,55 @@ export function SleepQuiz({ onDone, variant = "inline" }: SleepQuizProps) {
           </div>
         )}
       </div>
+
+      {/* Question Pill Navigator */}
+      {!completed && (
+        <div className="flex items-center justify-between gap-1.5 pt-2 pb-1 border-b border-line/40 overflow-x-auto text-xs">
+          <div className="flex items-center gap-1">
+            {Array.from({ length: totalSteps }, (_, i) => i + 1).map((qNum) => (
+              <button
+                key={qNum}
+                type="button"
+                onClick={() => setStep(qNum)}
+                className={`h-5 min-w-5 px-1.5 rounded text-[10px] font-black cursor-pointer ${
+                  step === qNum
+                    ? "bg-indigo-600 text-white shadow-xs"
+                    : "bg-surface border border-line text-ink-soft hover:bg-surface-subtle"
+                }`}
+                title={`Jump to Question ${qNum}`}
+              >
+                Q{qNum}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => setStep(totalSteps + 1)}
+            className={`h-5 px-2 rounded text-[10px] font-black cursor-pointer whitespace-nowrap ${
+              isReveal
+                ? "bg-indigo-600 text-white shadow-xs"
+                : "bg-surface border border-line text-ink hover:bg-surface-subtle"
+            }`}
+            title="Jump to Results & Review"
+          >
+            Review 📋
+          </button>
+        </div>
+      )}
+
+      {/* Editing Shortcut Banner */}
+      {!completed && !isReveal && (
+        <div className="flex items-center justify-between px-2.5 py-1 rounded-lg bg-surface-subtle border border-line text-[11px] mt-2">
+          <span className="text-ink-soft">Answering Question {step}/{totalSteps}</span>
+          <button
+            type="button"
+            onClick={() => setStep(totalSteps + 1)}
+            className="font-bold text-indigo-400 hover:underline cursor-pointer"
+          >
+            Jump to Review ➔
+          </button>
+        </div>
+      )}
 
       {errorMsg && (
         <p className="mt-3 rounded-xl bg-crisis-soft px-3 py-2 text-xs font-medium text-crisis">
@@ -194,19 +291,95 @@ export function SleepQuiz({ onDone, variant = "inline" }: SleepQuizProps) {
             <p className="text-xs text-ink-soft leading-relaxed">{result.personalizedSleepTips}</p>
           </div>
 
+          {/* Review & Edit Answers */}
+          <div className="rounded-2xl border border-line bg-surface p-4 shadow-xs space-y-3">
+            <div className="flex items-center justify-between border-b border-line pb-2">
+              <h4 className="text-xs font-black text-ink flex items-center gap-1.5">
+                <span>📋</span> Review & Change Sleep Responses (7 Total)
+              </h4>
+              <button
+                type="button"
+                onClick={() => setShowReviewList(!showReviewList)}
+                className="text-[11px] font-bold text-indigo-400 hover:underline cursor-pointer"
+              >
+                {showReviewList ? "Hide ▲" : "Show ▼"}
+              </button>
+            </div>
+
+            {showReviewList && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q1: Bedtime Window</span>
+                    <span className="font-bold text-ink truncate block">{sleepLabels.bedtimeWindow[answers.bedtimeWindow]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(1)} className="text-[11px] font-extrabold text-indigo-400 px-2 py-1 rounded bg-indigo-500/10 hover:bg-indigo-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q2: Drift-off Speed</span>
+                    <span className="font-bold text-ink truncate block">{sleepLabels.driftOffSpeed[answers.driftOffSpeed]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(2)} className="text-[11px] font-extrabold text-indigo-400 px-2 py-1 rounded bg-indigo-500/10 hover:bg-indigo-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q3: Night Wakeups</span>
+                    <span className="font-bold text-ink truncate block">{sleepLabels.nightWakeups[answers.nightWakeups]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(3)} className="text-[11px] font-extrabold text-indigo-400 px-2 py-1 rounded bg-indigo-500/10 hover:bg-indigo-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q4: Caffeine Cutoff</span>
+                    <span className="font-bold text-ink truncate block">{sleepLabels.caffeineCutoff[answers.caffeineCutoff]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(4)} className="text-[11px] font-extrabold text-indigo-400 px-2 py-1 rounded bg-indigo-500/10 hover:bg-indigo-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q5: Screen Wind-down</span>
+                    <span className="font-bold text-ink truncate block">{sleepLabels.screenWindDown[answers.screenWindDown]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(5)} className="text-[11px] font-extrabold text-indigo-400 px-2 py-1 rounded bg-indigo-500/10 hover:bg-indigo-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q6: Bedroom Climate</span>
+                    <span className="font-bold text-ink truncate block">{sleepLabels.bedroomClimate[answers.bedroomClimate]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(6)} className="text-[11px] font-extrabold text-indigo-400 px-2 py-1 rounded bg-indigo-500/10 hover:bg-indigo-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2 sm:col-span-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q7: Dream Recall</span>
+                    <span className="font-bold text-ink truncate block">{sleepLabels.dreamRecall[answers.dreamRecall]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(7)} className="text-[11px] font-extrabold text-indigo-400 px-2 py-1 rounded bg-indigo-500/10 hover:bg-indigo-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="flex items-center justify-between pt-2">
             <button
               type="button"
-              onClick={() => setStep(totalSteps)}
-              className="text-xs font-semibold text-ink-muted hover:text-ink"
+              onClick={() => setStep(1)}
+              className="text-xs font-semibold text-ink-muted hover:text-ink cursor-pointer"
             >
-              ← Edit Responses
+              ← Restart from Q1
             </button>
             <button
               type="button"
               disabled={pending}
               onClick={handleSave}
-              className="lif-btn-primary py-2.5 px-6 text-xs font-bold flex items-center gap-2 shadow-md hover:scale-102 transition"
+              className="lif-btn-primary py-2.5 px-6 text-xs font-bold flex items-center gap-2 shadow-md hover:scale-102 transition cursor-pointer"
             >
               <span>🌙</span>
               <span>{pending ? "Saving..." : "Lock In Sleep Log (+25 XP)"}</span>

@@ -30,6 +30,46 @@ export function RecoveryQuiz({ onDone, variant = "inline" }: RecoveryQuizProps) 
     previousDayStrain: "moderate_active",
   });
 
+  const [showReviewList, setShowReviewList] = useState(true);
+
+  const recoveryLabels = {
+    wakeupTrigger: {
+      before_alarm: "Naturally before alarm",
+      gentle_alarm: "Gentle first alarm",
+      snooze_war: "Violent snooze war (3+ alarms)",
+      jolted_abrupt: "Jolted awake abruptly",
+    },
+    bodyMobility: {
+      limber_spring: "Limber & Springy",
+      steady_normal: "Normal Healthy Baseline",
+      heavy_achy: "Heavy, Stiff & Sluggish",
+      deep_exhaustion: "Deep Systemic Soreness",
+    },
+    autonomicBreath: {
+      deep_calm: "Deep, Slow & Calm (High Vagal)",
+      steady_even: "Steady Baseline Rhythm",
+      fluttery_tight: "Elevated / Chest Tightness",
+    },
+    sorenessZone: {
+      none: "Zero Muscle Soreness",
+      neck_shoulders: "Neck & Upper Trapezius",
+      lower_back: "Lower Back / Lumbar",
+      legs_glutes: "Legs, Hamstrings & Glutes",
+      full_body_tender: "Full Body Tender / Aching",
+    },
+    hydrationAwakening: {
+      quenched_fresh: "Quenched & Fresh",
+      mildly_dry: "Mildly Dry",
+      parched_sticky: "Parched & Sticky Mouth",
+    },
+    previousDayStrain: {
+      rest_day: "Rest & Sedentary",
+      moderate_active: "Active Day (7k–10k steps)",
+      brutal_intense: "Heavy Workout / Long Run",
+      poor_recovery_cycle: "Multi-Day Stacked Fatigue",
+    },
+  };
+
   const result = evaluateDeepRecoveryQuest(answers);
   const totalSteps = 6;
   const isReveal = step > totalSteps;
@@ -101,6 +141,55 @@ export function RecoveryQuiz({ onDone, variant = "inline" }: RecoveryQuizProps) 
           </div>
         )}
       </div>
+
+      {/* Question Pill Navigator */}
+      {!completed && (
+        <div className="flex items-center justify-between gap-1.5 pt-2 pb-1 border-b border-line/40 overflow-x-auto text-xs">
+          <div className="flex items-center gap-1">
+            {Array.from({ length: totalSteps }, (_, i) => i + 1).map((qNum) => (
+              <button
+                key={qNum}
+                type="button"
+                onClick={() => setStep(qNum)}
+                className={`h-5 min-w-5 px-1.5 rounded text-[10px] font-black cursor-pointer ${
+                  step === qNum
+                    ? "bg-emerald-600 text-white shadow-xs"
+                    : "bg-surface border border-line text-ink-soft hover:bg-surface-subtle"
+                }`}
+                title={`Jump to Question ${qNum}`}
+              >
+                Q{qNum}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => setStep(totalSteps + 1)}
+            className={`h-5 px-2 rounded text-[10px] font-black cursor-pointer whitespace-nowrap ${
+              isReveal
+                ? "bg-emerald-600 text-white shadow-xs"
+                : "bg-surface border border-line text-ink hover:bg-surface-subtle"
+            }`}
+            title="Jump to Results & Review"
+          >
+            Review 📋
+          </button>
+        </div>
+      )}
+
+      {/* Editing Shortcut Banner */}
+      {!completed && !isReveal && (
+        <div className="flex items-center justify-between px-2.5 py-1 rounded-lg bg-surface-subtle border border-line text-[11px] mt-2">
+          <span className="text-ink-soft">Answering Question {step}/{totalSteps}</span>
+          <button
+            type="button"
+            onClick={() => setStep(totalSteps + 1)}
+            className="font-bold text-emerald-500 hover:underline cursor-pointer"
+          >
+            Jump to Review ➔
+          </button>
+        </div>
+      )}
 
       {errorMsg && (
         <p className="mt-3 rounded-xl bg-crisis-soft px-3 py-2 text-xs font-medium text-crisis">
@@ -175,19 +264,87 @@ export function RecoveryQuiz({ onDone, variant = "inline" }: RecoveryQuizProps) 
             <p className="text-xs text-ink-soft leading-relaxed">{result.actionableAdvice}</p>
           </div>
 
+          {/* Review & Edit Answers */}
+          <div className="rounded-2xl border border-line bg-surface p-4 shadow-xs space-y-3">
+            <div className="flex items-center justify-between border-b border-line pb-2">
+              <h4 className="text-xs font-black text-ink flex items-center gap-1.5">
+                <span>📋</span> Review & Change Recovery Responses (6 Total)
+              </h4>
+              <button
+                type="button"
+                onClick={() => setShowReviewList(!showReviewList)}
+                className="text-[11px] font-bold text-emerald-500 hover:underline cursor-pointer"
+              >
+                {showReviewList ? "Hide ▲" : "Show ▼"}
+              </button>
+            </div>
+
+            {showReviewList && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q1: Wakeup Trigger</span>
+                    <span className="font-bold text-ink truncate block">{recoveryLabels.wakeupTrigger[answers.wakeupTrigger]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(1)} className="text-[11px] font-extrabold text-emerald-500 px-2 py-1 rounded bg-emerald-500/10 hover:bg-emerald-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q2: Body Mobility</span>
+                    <span className="font-bold text-ink truncate block">{recoveryLabels.bodyMobility[answers.bodyMobility]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(2)} className="text-[11px] font-extrabold text-emerald-500 px-2 py-1 rounded bg-emerald-500/10 hover:bg-emerald-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q3: Autonomic Breath</span>
+                    <span className="font-bold text-ink truncate block">{recoveryLabels.autonomicBreath[answers.autonomicBreath]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(3)} className="text-[11px] font-extrabold text-emerald-500 px-2 py-1 rounded bg-emerald-500/10 hover:bg-emerald-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q4: Soreness Zone</span>
+                    <span className="font-bold text-ink truncate block">{recoveryLabels.sorenessZone[answers.sorenessZone]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(4)} className="text-[11px] font-extrabold text-emerald-500 px-2 py-1 rounded bg-emerald-500/10 hover:bg-emerald-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q5: Hydration Upon Waking</span>
+                    <span className="font-bold text-ink truncate block">{recoveryLabels.hydrationAwakening[answers.hydrationAwakening]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(5)} className="text-[11px] font-extrabold text-emerald-500 px-2 py-1 rounded bg-emerald-500/10 hover:bg-emerald-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q6: Previous Day Strain</span>
+                    <span className="font-bold text-ink truncate block">{recoveryLabels.previousDayStrain[answers.previousDayStrain]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(6)} className="text-[11px] font-extrabold text-emerald-500 px-2 py-1 rounded bg-emerald-500/10 hover:bg-emerald-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="flex items-center justify-between pt-2">
             <button
               type="button"
-              onClick={() => setStep(totalSteps)}
-              className="text-xs font-semibold text-ink-muted hover:text-ink"
+              onClick={() => setStep(1)}
+              className="text-xs font-semibold text-ink-muted hover:text-ink cursor-pointer"
             >
-              ← Edit Responses
+              ← Restart from Q1
             </button>
             <button
               type="button"
               disabled={pending}
               onClick={handleSave}
-              className="lif-btn-primary py-2.5 px-6 text-xs font-bold flex items-center gap-2 shadow-md hover:scale-102 transition"
+              className="lif-btn-primary py-2.5 px-6 text-xs font-bold flex items-center gap-2 shadow-md hover:scale-102 transition cursor-pointer"
             >
               <span>💚</span>
               <span>{pending ? "Saving..." : "Lock In Recovery Log (+25 XP)"}</span>

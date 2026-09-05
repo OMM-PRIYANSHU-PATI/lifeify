@@ -30,6 +30,47 @@ export function MoodQuiz({ onDone, variant = "inline" }: MoodQuizProps) {
     energyStability: "steady_flowing",
   });
 
+  const [showReviewList, setShowReviewList] = useState(true);
+
+  const moodLabels = {
+    bootupMindset: {
+      excited_ready: "Excited about today! High drive",
+      calm_grounded: "Grounded & peaceful, step by step",
+      overwhelmed_todos: "Anxious / to-do list suffocating",
+      stormy_drained: "Emotionally empty & discouraged",
+    },
+    cognitiveClarity: {
+      laser_4k: "4K Laser Focus (Ultra clear)",
+      steady_coffee: "Steady & functional",
+      foggy_scattered: "Hazy brain fog / scattered",
+      spaced_out: "Zoned out in slow-motion",
+    },
+    socialBattery: {
+      full_friendly: "Full & Magnetic (High empathy)",
+      selective_peace: "Polite & Selective (Quiet)",
+      headphones_on: "Solo Mode (Do Not Disturb)",
+      irritable_short: "Short Fuse / Sensitive",
+    },
+    stressTriggers: {
+      minimal_smooth: "Minimal pressure (Smooth sailing)",
+      deadline_pressure: "Deadline crunch / heavy workload",
+      interpersonal_friction: "Interpersonal or relational friction",
+      health_body_anxiety: "Health & Somatic Body Tension",
+      chronic_burnout: "Chronic stress / overwhelmed",
+    },
+    innerSelfTalk: {
+      empowering_kind: "Compassionate & encouraging",
+      neutral_pragmatic: "Pragmatic & task-focused",
+      harsh_critical: "Harsh & self-critical",
+      anxious_catastrophic: "Anxious & worst-case looping",
+    },
+    energyStability: {
+      steady_flowing: "Smooth & sustained endurance",
+      moderate_rollercoaster: "Rollercoaster with afternoon slump",
+      crash_and_burn: "Immediate crash & severe fatigue",
+    },
+  };
+
   const result = evaluateDeepMoodQuest(answers);
   const totalSteps = 6;
   const isReveal = step > totalSteps;
@@ -101,6 +142,55 @@ export function MoodQuiz({ onDone, variant = "inline" }: MoodQuizProps) {
         )}
       </div>
 
+      {/* Question Pill Navigator */}
+      {!completed && (
+        <div className="flex items-center justify-between gap-1.5 pt-2 pb-1 border-b border-line/40 overflow-x-auto text-xs">
+          <div className="flex items-center gap-1">
+            {Array.from({ length: totalSteps }, (_, i) => i + 1).map((qNum) => (
+              <button
+                key={qNum}
+                type="button"
+                onClick={() => setStep(qNum)}
+                className={`h-5 min-w-5 px-1.5 rounded text-[10px] font-black cursor-pointer ${
+                  step === qNum
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "bg-surface border border-line text-ink-soft hover:bg-surface-subtle"
+                }`}
+                title={`Jump to Question ${qNum}`}
+              >
+                Q{qNum}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => setStep(totalSteps + 1)}
+            className={`h-5 px-2 rounded text-[10px] font-black cursor-pointer whitespace-nowrap ${
+              isReveal
+                ? "bg-amber-600 text-white shadow-xs"
+                : "bg-surface border border-line text-ink hover:bg-surface-subtle"
+            }`}
+            title="Jump to Results & Review"
+          >
+            Review 📋
+          </button>
+        </div>
+      )}
+
+      {/* Editing Shortcut Banner */}
+      {!completed && !isReveal && (
+        <div className="flex items-center justify-between px-2.5 py-1 rounded-lg bg-surface-subtle border border-line text-[11px] mt-2">
+          <span className="text-ink-soft">Answering Question {step}/{totalSteps}</span>
+          <button
+            type="button"
+            onClick={() => setStep(totalSteps + 1)}
+            className="font-bold text-amber-500 hover:underline cursor-pointer"
+          >
+            Jump to Review ➔
+          </button>
+        </div>
+      )}
+
       {errorMsg && (
         <p className="mt-3 rounded-xl bg-crisis-soft px-3 py-2 text-xs font-medium text-crisis">
           {errorMsg}
@@ -171,19 +261,87 @@ export function MoodQuiz({ onDone, variant = "inline" }: MoodQuizProps) {
             <p className="text-xs text-ink-soft leading-relaxed">{result.mindsetNudge}</p>
           </div>
 
+          {/* Review & Edit Answers */}
+          <div className="rounded-2xl border border-line bg-surface p-4 shadow-xs space-y-3">
+            <div className="flex items-center justify-between border-b border-line pb-2">
+              <h4 className="text-xs font-black text-ink flex items-center gap-1.5">
+                <span>📋</span> Review & Change Mood Responses (6 Total)
+              </h4>
+              <button
+                type="button"
+                onClick={() => setShowReviewList(!showReviewList)}
+                className="text-[11px] font-bold text-amber-500 hover:underline cursor-pointer"
+              >
+                {showReviewList ? "Hide ▲" : "Show ▼"}
+              </button>
+            </div>
+
+            {showReviewList && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q1: Bootup Mindset</span>
+                    <span className="font-bold text-ink truncate block">{moodLabels.bootupMindset[answers.bootupMindset]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(1)} className="text-[11px] font-extrabold text-amber-500 px-2 py-1 rounded bg-amber-500/10 hover:bg-amber-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q2: Cognitive Clarity</span>
+                    <span className="font-bold text-ink truncate block">{moodLabels.cognitiveClarity[answers.cognitiveClarity]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(2)} className="text-[11px] font-extrabold text-amber-500 px-2 py-1 rounded bg-amber-500/10 hover:bg-amber-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q3: Social Battery</span>
+                    <span className="font-bold text-ink truncate block">{moodLabels.socialBattery[answers.socialBattery]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(3)} className="text-[11px] font-extrabold text-amber-500 px-2 py-1 rounded bg-amber-500/10 hover:bg-amber-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q4: Stress Triggers</span>
+                    <span className="font-bold text-ink truncate block">{moodLabels.stressTriggers[answers.stressTriggers]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(4)} className="text-[11px] font-extrabold text-amber-500 px-2 py-1 rounded bg-amber-500/10 hover:bg-amber-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q5: Inner Self-Talk</span>
+                    <span className="font-bold text-ink truncate block">{moodLabels.innerSelfTalk[answers.innerSelfTalk]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(5)} className="text-[11px] font-extrabold text-amber-500 px-2 py-1 rounded bg-amber-500/10 hover:bg-amber-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+
+                <div className="p-2 rounded-xl border border-line bg-surface-subtle flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-ink-muted block">Q6: Energy Stability</span>
+                    <span className="font-bold text-ink truncate block">{moodLabels.energyStability[answers.energyStability]}</span>
+                  </div>
+                  <button type="button" onClick={() => setStep(6)} className="text-[11px] font-extrabold text-amber-500 px-2 py-1 rounded bg-amber-500/10 hover:bg-amber-500/20 cursor-pointer">Change ✏️</button>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="flex items-center justify-between pt-2">
             <button
               type="button"
-              onClick={() => setStep(totalSteps)}
-              className="text-xs font-semibold text-ink-muted hover:text-ink"
+              onClick={() => setStep(1)}
+              className="text-xs font-semibold text-ink-muted hover:text-ink cursor-pointer"
             >
-              ← Edit Responses
+              ← Restart from Q1
             </button>
             <button
               type="button"
               disabled={pending}
               onClick={handleSave}
-              className="lif-btn-primary py-2.5 px-6 text-xs font-bold flex items-center gap-2 shadow-md hover:scale-102 transition"
+              className="lif-btn-primary py-2.5 px-6 text-xs font-bold flex items-center gap-2 shadow-md hover:scale-102 transition cursor-pointer"
             >
               <span>☀️</span>
               <span>{pending ? "Saving..." : "Lock In Mood Log (+25 XP)"}</span>
