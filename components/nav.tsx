@@ -53,11 +53,11 @@ export const NAV_SECTIONS: NavSection[] = [
 ];
 
 const MOBILE_ITEMS = [
-  { href: "/app/dashboard", label: "Home", emoji: "🏠" },
-  { href: "/app/analytics", label: "Analytics", emoji: "📊" },
+  { href: "/app/dashboard", label: "Summary", emoji: "🧡" },
+  { href: "/app/features", label: "Browse", emoji: "🗂️" },
   { href: "/app/medications", label: "Meds", emoji: "💊" },
-  { href: "/app/emergency-card", label: "SOS Card", emoji: "🚨" },
-  { href: "/settings/profile", label: "Profile", emoji: "👤" },
+  { href: "/app/family", label: "Sharing", emoji: "👨‍👩‍👧" },
+  { href: "/app/emergency-card", label: "Medical ID", emoji: "🚨" },
 ];
 
 export function Sidebar({ isAdmin }: { isAdmin: boolean }) {
