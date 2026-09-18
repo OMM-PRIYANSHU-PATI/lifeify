@@ -1,293 +1,408 @@
+import React from "react";
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/auth";
-import { LanguageSwitcher } from "@/components/language-switcher";
+import {
+  getCategories,
+  getCompactDiseases,
+  getSymptoms,
+  getTriageRules,
+  getOrganSystems,
+  getAnalyticsSummary,
+} from "@/lib/medical/server-data";
+import { MedicalNav } from "@/components/medical/medical-nav";
+import { MedicalDisclaimer } from "@/components/medical/medical-disclaimer";
+import {
+  Network,
+  Activity,
+  Layers,
+  HeartPulse,
+  Stethoscope,
+  ShieldAlert,
+  ArrowRight,
+  Sparkles,
+  BookOpen,
+  BarChart3,
+  Search,
+  CheckCircle2,
+  ChevronRight,
+  Database,
+  Gamepad2,
+} from "lucide-react";
+
+export const metadata = {
+  title: "Lifeify Medical Knowledge Tree & Clinical Intelligence",
+  description: "Interactive Medical Disease & Symptom Knowledge Tree powered by comprehensive biomedical taxonomy.",
+};
 
 export default async function HomePage() {
-  const user = await getCurrentUser();
+  const categories = getCategories();
+  const symptoms = getSymptoms();
+  const triageRules = getTriageRules();
+  const organSystems = getOrganSystems();
+  const analytics = getAnalyticsSummary();
 
-  const appleHealthCards = [
+  const treeModes = [
     {
-      domain: "Activity & Movement",
-      emoji: "🧡",
-      accent: "#FF5B00",
-      headline: "8,420 Steps",
-      sub: "Goal: 10,000 · 84% reached",
-      href: "/app/track/steps",
+      mode: "taxonomy",
+      title: "Mode 1: Taxonomy Hierarchy Tree",
+      badge: "Default Taxonomy",
+      color: "from-cyan-950/40 via-slate-900 to-slate-900 border-cyan-500/30 text-cyan-300",
+      icon: Layers,
+      description: "Category (25) → Subcategory (407) → Disease (8,724) → Symptoms with frequency profiles.",
+      href: "/tree?mode=taxonomy",
     },
     {
-      domain: "Heart & Vitals",
-      emoji: "❤️",
-      accent: "#FF2D55",
-      headline: "118/78 mmHg",
-      sub: "72 BPM · Optimal resting range",
-      href: "/app/conditions",
+      mode: "symptom",
+      title: "Mode 2: Symptom Reverse Tree",
+      badge: "Reverse Graph",
+      color: "from-amber-950/40 via-slate-900 to-slate-900 border-amber-500/30 text-amber-300",
+      icon: Activity,
+      description: "Symptom (377) → Associated Diseases → Disease Categories with prevalence & specificity ratings.",
+      href: "/tree?mode=symptom",
     },
     {
-      domain: "Sleep Architecture",
-      emoji: "💜",
-      accent: "#5856D6",
-      headline: "7h 42m Asleep",
-      sub: "Deep 1h 45m · REM 1h 50m",
-      href: "/app/plans/sleep",
+      mode: "triage",
+      title: "Mode 3: Clinical Triage Tree",
+      badge: "Emergency & Vitals",
+      color: "from-rose-950/40 via-slate-900 to-slate-900 border-rose-500/30 text-rose-300",
+      icon: Stethoscope,
+      description: "Triage Level (Emergency / Doctor / Routine) → Diseases → Symptoms → Management Protocols.",
+      href: "/tree?mode=triage",
     },
     {
-      domain: "Hydration Dynamics",
-      emoji: "🩵",
-      accent: "#00C7BE",
-      headline: "1,750 mL",
-      sub: "Target: 2,500 mL · 70% daily",
-      href: "/app/track/water",
+      mode: "organ_system",
+      title: "Mode 4: Organ-System Tree",
+      badge: "Anatomical",
+      color: "from-purple-950/40 via-slate-900 to-slate-900 border-purple-500/30 text-purple-300",
+      icon: HeartPulse,
+      description: "9 Anatomical Organ Systems → Symptoms → Disease Pathologies.",
+      href: "/tree?mode=organ_system",
     },
     {
-      domain: "Prescription OCR & Meds",
-      emoji: "💊",
-      accent: "#AF52DE",
-      headline: "Today's Regimen",
-      sub: "Zero DDI interactions · On schedule",
-      href: "/app/medications",
-    },
-    {
-      domain: "Emergency Medical ID",
-      emoji: "🚨",
-      accent: "#FF3B30",
-      headline: "SOS Ready (O+)",
-      sub: "QR health card & contact links",
-      href: "/app/emergency-card",
-    },
-  ];
-
-  const clinicalDomains = [
-    {
-      emoji: "📷",
-      title: "Prescription OCR Scanner",
-      desc: "Deterministic extraction of drug names, dosages, frequency, and instructions with mandatory user confirmation.",
-      href: "/app/scan",
-      tag: "Feature #050",
-    },
-    {
-      emoji: "🩺",
-      title: "Clinical Symptom Triage",
-      desc: "Emergency (112), urgent care, and self-care routing using evidence-based medical decision trees.",
-      href: "/app/symptom-checker",
-      tag: "Feature #241",
-    },
-    {
-      emoji: "🎯",
-      title: "Indian Diabetes & CVD Risk (IDRS)",
-      desc: "Validated Indian Diabetes Risk Score and 10-year Framingham Cardiovascular assessment algorithms.",
-      href: "/app/risk-assessment",
-      tag: "Feature #026",
-    },
-    {
-      emoji: "💊",
-      title: "Drug-Drug & Food Interaction Matrix",
-      desc: "Active ingredient safety engine checking contraindications, duplicate brands, and nutrient timing.",
-      href: "/app/medications",
-      tag: "Feature #080",
-    },
-    {
-      emoji: "👨‍⚕️",
-      title: "Doctor RPM & Remote Care",
-      desc: "10-minute secure clinical access codes, longitudinal physician review, and digital consultation summaries.",
-      href: "/doctor/rpm",
-      tag: "Feature #258",
-    },
-    {
-      emoji: "👨‍👩‍👧",
-      title: "Family Kinship & Caregivers",
-      desc: "Reassuring passive milestone updates for elderly parents and working children with zero guilt.",
-      href: "/app/family",
-      tag: "Feature #249",
-    },
-    {
-      emoji: "🧪",
-      title: "Diagnostic Lab Bookings",
-      desc: "Home phlebotomy sample collection (Thyrocare, Lal PathLabs) with electronic report ingestion.",
-      href: "/app/labs",
-      tag: "Feature #044",
-    },
-    {
-      emoji: "📦",
-      title: "Pharmacy Refills (1mg / Apollo)",
-      desc: "Automated low-stock detection with 1-click prescription fulfillment routing.",
-      href: "/app/pharmacy",
-      tag: "Feature #074",
-    },
-    {
-      emoji: "⌚",
-      title: "Google Health & Apple Health Sync",
-      desc: "Unified ingestion from phone sensors, Wear OS, and Apple HealthKit with deduplication.",
-      href: "/app/wearables",
-      tag: "Feature #180",
-    },
-    {
-      emoji: "🎙️",
-      title: "Voice Health Logging",
-      desc: "Natural speech logging with deterministic intent parsing and strict user review before saving.",
-      href: "/app/voice",
-      tag: "Feature #270",
-    },
-    {
-      emoji: "🌐",
-      title: "8 Regional Indian Languages",
-      desc: "Full localization across English, हिन्दी, தமிழ், తెలుగు, বাংলা, मराठी, ಕನ್ನಡ, and ગુજરાતી.",
-      href: "/app/dashboard",
-      tag: "Feature #274",
-    },
-    {
-      emoji: "🔒",
-      title: "Privacy Center & Local PWA",
-      desc: "Full DPDP & HIPAA data sovereignty, exportable JSON/CSV, and offline-first queue.",
-      href: "/app/privacy",
-      tag: "Feature #303",
+      mode: "graph",
+      title: "Mode 5: Relational Network Graph",
+      badge: "Graph Explorer",
+      color: "from-emerald-950/40 via-slate-900 to-slate-900 border-emerald-500/30 text-emerald-300",
+      icon: Network,
+      description: "Multidimensional cross-domain graph linking Categories ↔ Subcategories ↔ Symptoms ↔ Triage.",
+      href: "/tree?mode=graph",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-background text-ink flex flex-col justify-between">
-      {/* Top Navbar */}
-      <header className="border-b border-line bg-surface/80 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-black tracking-tight flex items-center gap-2">
-            <span className="text-primary font-extrabold">LIFE</span>IFY
-            <span className="rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 px-1.5 py-0.5 text-[10px] font-bold">
-              316 Features Active
-            </span>
-          </Link>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+      <MedicalNav />
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-10">
+        <MedicalDisclaimer />
 
-          <div className="flex items-center gap-3">
-            <Link
-              href="/features"
-              className="text-xs font-bold text-ink-muted hover:text-ink px-2.5 py-1.5 rounded-lg hover:bg-surface-subtle transition-colors hidden sm:inline-block"
-            >
-              Browse All 316 Specs
-            </Link>
-            <LanguageSwitcher />
-            <Link
-              href="/app/dashboard"
-              className="rounded-xl bg-primary px-4 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-primary-dark transition-all flex items-center gap-1.5"
-            >
-              <span>🚀</span> Open App
-            </Link>
-          </div>
-        </div>
-      </header>
+        {/* ========================================================================= */}
+        {/* APPLE HEALTH OS & FUTURE PREDICTOR HERO SHOWCASE                          */}
+        {/* ========================================================================= */}
+        <div className="rounded-3xl border border-line bg-gradient-to-b from-slate-900/90 via-slate-900 to-slate-950 p-6 sm:p-10 shadow-2xl space-y-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider">
+                <span>🧡</span>
+                <span>Apple Health-Inspired Clean &amp; Minimalist Health OS</span>
+              </div>
+              <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+                LIFEIFY <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">Health OS</span>
+              </h1>
+              <p className="text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed">
+                316 clinical, behavioral, and longevity features designed in a minimalist dual-mode interface. Monitor real-time readiness, track vitals, and forecast long-term health risks.
+              </p>
+            </div>
 
-      {/* Hero Section */}
-      <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-12">
-        {/* Apple Health Minimalist Hero Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 px-3.5 py-1 text-xs font-bold">
-            <span>✨</span>
-            <span>Inspired by Apple Health · Clean, Minimalist UI on Web &amp; Mobile</span>
-          </div>
-
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-ink leading-tight">
-            The Complete Personal Health OS. <br className="hidden sm:inline" />
-            <span className="text-primary">316 Verified Features. Zero AI Guesswork.</span>
-          </h1>
-
-          <p className="text-sm sm:text-base text-ink-muted leading-relaxed">
-            From ambulatory step tracking and restorative sleep architecture to deterministic prescription OCR, clinical drug safety, doctor RPM, and emergency SOS — all unified in an Apple Health-inspired interface.
-          </p>
-
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href="/app/dashboard"
-              className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-md hover:bg-primary-dark transition-all"
-            >
-              Launch Dashboard (Summary) 🧡
-            </Link>
-            <Link
-              href="/features"
-              className="rounded-xl border border-line bg-surface px-6 py-3 text-sm font-bold text-ink hover:bg-surface-subtle shadow-sm transition-all"
-            >
-              Browse All 316 Categories 🗂️
-            </Link>
-          </div>
-        </div>
-
-        {/* Apple Health Live Preview Grid */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-ink-muted">
-              Live Health Summary Highlights (Web &amp; App)
-            </span>
-            <Link href="/app/dashboard" className="text-xs font-bold text-primary hover:underline">
-              Experience Full OS →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            {appleHealthCards.map((card, i) => (
+            <div className="flex flex-wrap items-center gap-3 shrink-0">
               <Link
-                key={i}
-                href={card.href}
-                className="rounded-2xl border border-line bg-surface p-4 flex flex-col justify-between hover:shadow-md transition-shadow group relative overflow-hidden"
+                href="/app/dashboard"
+                className="px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold rounded-2xl text-sm transition shadow-lg shadow-emerald-600/30 flex items-center gap-2.5 group"
               >
-                <div
-                  className="absolute top-0 left-0 right-0 h-1"
-                  style={{ backgroundColor: card.accent }}
-                />
-                <div>
-                  <div className="flex items-center justify-between text-xs font-bold" style={{ color: card.accent }}>
-                    <span className="flex items-center gap-1.5">
-                      <span>{card.emoji}</span> {card.domain}
-                    </span>
-                    <span className="text-ink-muted group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-
-                  <div className="mt-3">
-                    <div className="text-2xl font-black tracking-tight text-ink font-mono">
-                      {card.headline}
-                    </div>
-                    <div className="text-xs text-ink-muted mt-0.5 font-medium">
-                      {card.sub}
-                    </div>
-                  </div>
-                </div>
+                <span>🧡</span>
+                <span>Open Health OS</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition" />
               </Link>
-            ))}
+              <Link
+                href="/future-disease-predictor"
+                className="px-5 py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-2xl text-sm transition shadow-lg shadow-purple-600/25 flex items-center gap-2"
+              >
+                <span>🔮</span>
+                <span>Future Disease Predictor</span>
+              </Link>
+              <Link
+                href="/features"
+                className="px-4 py-3.5 bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-semibold rounded-2xl text-sm transition border border-slate-700 flex items-center gap-1.5"
+              >
+                <span>🗂️</span>
+                <span>Browse 316 Features</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Apple Health 4 Mini Preview Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-slate-800">
+            {/* 1. Steps & Movement */}
+            <Link
+              href="/app/dashboard"
+              className="p-4 rounded-2xl bg-slate-900/80 border border-orange-500/30 hover:border-orange-500/60 hover:bg-slate-850 transition flex flex-col justify-between group"
+            >
+              <div className="flex items-center justify-between text-xs font-bold text-orange-400">
+                <span>🧡 ACTIVITY</span>
+                <span className="text-[10px] text-slate-400">Today</span>
+              </div>
+              <div className="my-3">
+                <div className="text-2xl font-black text-white font-mono">8,420</div>
+                <div className="text-[11px] font-semibold text-slate-400">Steps · Goal: 6,000</div>
+              </div>
+              <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                <div className="h-full bg-orange-500 rounded-full" style={{ width: "100%" }} />
+              </div>
+            </Link>
+
+            {/* 2. Heart & BP */}
+            <Link
+              href="/app/dashboard"
+              className="p-4 rounded-2xl bg-slate-900/80 border border-rose-500/30 hover:border-rose-500/60 hover:bg-slate-850 transition flex flex-col justify-between group"
+            >
+              <div className="flex items-center justify-between text-xs font-bold text-rose-400">
+                <span>❤️ VITALS &amp; BP</span>
+                <span className="text-[10px] text-slate-400">Latest</span>
+              </div>
+              <div className="my-3">
+                <div className="text-2xl font-black text-white font-mono">118/78</div>
+                <div className="text-[11px] font-semibold text-slate-400">Optimal Blood Pressure</div>
+              </div>
+              <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                <div className="h-full bg-rose-500 rounded-full" style={{ width: "85%" }} />
+              </div>
+            </Link>
+
+            {/* 3. Sleep Architecture */}
+            <Link
+              href="/app/dashboard"
+              className="p-4 rounded-2xl bg-slate-900/80 border border-indigo-500/30 hover:border-indigo-500/60 hover:bg-slate-850 transition flex flex-col justify-between group"
+            >
+              <div className="flex items-center justify-between text-xs font-bold text-indigo-400">
+                <span>💜 SLEEP</span>
+                <span className="text-[10px] text-slate-400">Last Night</span>
+              </div>
+              <div className="my-3">
+                <div className="text-2xl font-black text-white font-mono">7h 45m</div>
+                <div className="text-[11px] font-semibold text-slate-400">88% Sleep Efficiency</div>
+              </div>
+              <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden flex">
+                <div className="h-full bg-indigo-500" style={{ width: "30%" }} />
+                <div className="h-full bg-purple-500" style={{ width: "25%" }} />
+                <div className="h-full bg-violet-400" style={{ width: "45%" }} />
+              </div>
+            </Link>
+
+            {/* 4. Future Disease Predictor */}
+            <Link
+              href="/future-disease-predictor"
+              className="p-4 rounded-2xl bg-slate-900/80 border border-purple-500/30 hover:border-purple-500/60 hover:bg-slate-850 transition flex flex-col justify-between group"
+            >
+              <div className="flex items-center justify-between text-xs font-bold text-purple-400">
+                <span>🔮 PREDICTOR</span>
+                <span className="text-[10px] text-emerald-400 font-bold">NEW</span>
+              </div>
+              <div className="my-3">
+                <div className="text-2xl font-black text-white font-mono">Low Risk</div>
+                <div className="text-[11px] font-semibold text-slate-400">6 Multi-System Diseases</div>
+              </div>
+              <div className="text-[11px] text-purple-300 font-bold flex items-center gap-1 group-hover:underline">
+                <span>Launch What-If Lab</span>
+                <span>→</span>
+              </div>
+            </Link>
           </div>
         </div>
 
-        {/* 12 Core Clinical Domains Grid */}
-        <div className="space-y-4">
-          <div className="text-center max-w-xl mx-auto space-y-1">
-            <h2 className="text-2xl font-bold tracking-tight text-ink">
-              14 Standard Clinical Domains
+        {/* ========================================================================= */}
+        {/* CLINICAL MEDICAL KNOWLEDGE GRAPH & DATA SCIENCE ENGINE                    */}
+        {/* ========================================================================= */}
+        <div className="relative overflow-hidden p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 border border-slate-800 shadow-2xl space-y-6">
+          <div className="space-y-3 max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-xs font-semibold">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Medical Knowledge Graph &amp; Clinical Intelligence</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+              Medical Disease &amp; Symptom{" "}
+              <span className="bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                Knowledge Tree
+              </span>
             </h2>
-            <p className="text-xs text-ink-muted">
-              Fully deterministic algorithms, verified medical safety bounds, and patient-sovereign privacy.
+            <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+              Explore dynamic multi-hierarchical relationships across <strong>8,724 disease conditions</strong>, <strong>377 symptoms</strong>, and <strong>25 medical categories</strong> derived from empirical clinical cohorts.
             </p>
           </div>
 
+          {/* Action CTAs */}
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <Link
+              href="/diagnostic-arena"
+              className="px-6 py-3 bg-gradient-to-r from-amber-500 via-rose-600 to-purple-600 hover:from-amber-400 hover:to-purple-500 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-rose-600/25 flex items-center gap-2 group"
+            >
+              <Sparkles className="w-4 h-4 text-amber-200" />
+              <span>Diagnostic Arena (Drag &amp; Drop Deck)</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition" />
+            </Link>
+            <Link
+              href="/rpg-quest"
+              className="px-6 py-3 bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-purple-600/25 flex items-center gap-2 group"
+            >
+              <Gamepad2 className="w-4 h-4" />
+              <span>20-Question RPG Quest</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition" />
+            </Link>
+            <Link
+              href="/symptom-analyzer"
+              className="px-5 py-3 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-semibold rounded-xl text-sm transition shadow-lg shadow-emerald-600/25 flex items-center gap-2 group"
+            >
+              <Stethoscope className="w-4 h-4" />
+              <span>Symptom Inference &amp; Graph</span>
+            </Link>
+            <Link
+              href="/tree"
+              className="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl text-sm transition border border-slate-700 flex items-center gap-2"
+            >
+              <Network className="w-4 h-4" />
+              <span>Knowledge Tree</span>
+            </Link>
+            <Link
+              href="/compare"
+              className="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl text-sm transition border border-slate-700 flex items-center gap-2"
+            >
+              <span>Compare</span>
+            </Link>
+          </div>
+
+          {/* KPI Dashboard Metrics Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-6 border-t border-slate-800/80">
+            <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800/80">
+              <span className="text-[10px] text-slate-400 uppercase font-semibold block">Diseases</span>
+              <p className="text-xl font-bold text-cyan-300 font-mono">{analytics.totalDiseases.toLocaleString()}</p>
+              <span className="text-[9px] text-slate-500">Master Catalog</span>
+            </div>
+            <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800/80">
+              <span className="text-[10px] text-slate-400 uppercase font-semibold block">Categories</span>
+              <p className="text-xl font-bold text-indigo-300 font-mono">{analytics.totalCategories}</p>
+              <span className="text-[9px] text-slate-500">Top Taxonomy</span>
+            </div>
+            <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800/80">
+              <span className="text-[10px] text-slate-400 uppercase font-semibold block">Subcategories</span>
+              <p className="text-xl font-bold text-purple-300 font-mono">{analytics.totalSubcategories}</p>
+              <span className="text-[9px] text-slate-500">Ontology Branches</span>
+            </div>
+            <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800/80">
+              <span className="text-[10px] text-slate-400 uppercase font-semibold block">Symptoms</span>
+              <p className="text-xl font-bold text-amber-300 font-mono">{analytics.totalSymptoms}</p>
+              <span className="text-[9px] text-slate-500">Organ Classified</span>
+            </div>
+            <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800/80">
+              <span className="text-[10px] text-slate-400 uppercase font-semibold block">Empirical Profiles</span>
+              <p className="text-xl font-bold text-emerald-300 font-mono">{analytics.totalEmpiricalProfiles}</p>
+              <span className="text-[9px] text-slate-500">Vitals &amp; Pain Scale</span>
+            </div>
+            <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800/80">
+              <span className="text-[10px] text-slate-400 uppercase font-semibold block">Triage Protocols</span>
+              <p className="text-xl font-bold text-rose-300 font-mono">{analytics.totalTriageRules}</p>
+              <span className="text-[9px] text-slate-500">Clinical Benchmarks</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 5 Tree Modes Showcase */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                <Network className="w-5 h-5 text-cyan-400" />
+                <span>5 Interactive Visualization Modes</span>
+              </h2>
+              <p className="text-xs text-slate-400">
+                Explore the dataset through multiple complementary clinical and taxonomic perspectives.
+              </p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {clinicalDomains.map((item, i) => (
-              <Link
-                key={i}
-                href={item.href}
-                className="group rounded-2xl border border-line bg-surface p-4 shadow-sm hover:border-primary/50 hover:shadow-md transition-all flex flex-col justify-between space-y-2.5"
-              >
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl">{item.emoji}</span>
-                    <span className="text-[10px] font-mono font-bold text-ink-muted bg-surface-subtle px-2 py-0.5 rounded border border-line/60">
-                      {item.tag}
-                    </span>
+            {treeModes.map((m) => {
+              const ModeIcon = m.icon;
+              return (
+                <Link
+                  key={m.mode}
+                  href={m.href}
+                  className={`p-5 rounded-2xl border transition-all hover:scale-[1.02] bg-gradient-to-br ${m.color} flex flex-col justify-between space-y-3 group shadow-lg`}
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="p-2 rounded-xl bg-slate-950/60 border border-slate-800">
+                        <ModeIcon className="w-5 h-5" />
+                      </span>
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-950/80 border border-slate-800">
+                        {m.badge}
+                      </span>
+                    </div>
+                    <h3 className="text-base font-bold text-white group-hover:text-cyan-300 transition">
+                      {m.title}
+                    </h3>
+                    <p className="text-xs text-slate-300/80 leading-relaxed">
+                      {m.description}
+                    </p>
                   </div>
-                  <h3 className="text-sm font-bold text-ink group-hover:text-primary transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs text-ink-muted leading-relaxed line-clamp-2">
-                    {item.desc}
-                  </p>
+                  <div className="flex items-center text-xs font-semibold text-cyan-400 group-hover:translate-x-1 transition pt-2">
+                    <span>Launch Mode</span>
+                    <ChevronRight className="w-4 h-4 ml-1" />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Medical Categories Grid */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                <Layers className="w-5 h-5 text-indigo-400" />
+                <span>Primary Medical Categories ({categories.length})</span>
+              </h2>
+              <p className="text-xs text-slate-400">
+                Comprehensive classification spanning infectious, cardiovascular, neurological, oncological, and systemic domains.
+              </p>
+            </div>
+            <Link
+              href="/diseases"
+              className="text-xs text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1"
+            >
+              <span>View all diseases</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {categories.map((c) => (
+              <Link
+                key={c.code}
+                href={`/tree?search=${encodeURIComponent(c.name)}`}
+                className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-cyan-500/40 hover:bg-slate-800/40 transition group space-y-2"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-bold text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-500/30">
+                    CAT {c.code}
+                  </span>
+                  <span className="text-[11px] font-mono text-slate-400">
+                    {c.subcategoriesCount} subcats
+                  </span>
                 </div>
-                <div className="pt-2 border-t border-line/60 flex items-center justify-between text-xs text-primary font-semibold">
-                  <span>Open Route</span>
-                  <span className="group-hover:translate-x-1 transition-transform">→</span>
+                <h3 className="text-xs font-bold text-slate-200 group-hover:text-cyan-300 transition line-clamp-1">
+                  {c.name}
+                </h3>
+                <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-800/60">
+                  <span>Diseases:</span>
+                  <span className="font-bold text-slate-200 font-mono">{c.diseasesCount}</span>
                 </div>
               </Link>
             ))}
@@ -296,16 +411,9 @@ export default async function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-line bg-surface py-6 text-center text-xs text-ink-muted">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <span>© 2026 LIFEIFY Personal Health OS — 316 V1 &amp; V2 Features Completed.</span>
-          <div className="flex items-center gap-4 font-semibold">
-            <Link href="/features" className="hover:text-ink">316 Feature Directory</Link>
-            <Link href="/pricing" className="hover:text-ink">Pricing</Link>
-            <Link href="/app/privacy" className="hover:text-ink">Privacy &amp; DPDP</Link>
-            <Link href="/doctor" className="hover:text-ink">Doctor Portal</Link>
-          </div>
-        </div>
+      <footer className="w-full border-t border-slate-800/80 bg-slate-950 py-8 px-4 text-center text-xs text-slate-500 space-y-2">
+        <p>Lifeify Medical Intelligence Platform · Comprehensive Disease &amp; Symptoms Knowledge Graph</p>
+        <p className="text-[11px] text-slate-600">Built from 2023 Master Dataset · Strictly for research &amp; knowledge exploration</p>
       </footer>
     </div>
   );
