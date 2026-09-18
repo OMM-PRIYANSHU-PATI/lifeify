@@ -763,6 +763,37 @@ export function AppleHealthDashboard({
               </div>
             </div>
           </div>
+
+          {/* Apple Health Future Disease Predictor Spotlight Card */}
+          <div className="rounded-3xl border border-line bg-gradient-to-r from-purple-500/10 via-primary/5 to-teal-500/10 p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+            <div className="space-y-1.5 text-center md:text-left z-10">
+              <div className="flex items-center justify-center md:justify-start gap-2">
+                <span className="text-xl">🔮</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-primary-dark">
+                  Longitudinal Prognostic Intelligence
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-primary text-white">
+                  NEW
+                </span>
+              </div>
+              <h3 className="text-xl font-bold tracking-tight text-ink">
+                Future Disease Predictor & What-If Simulation
+              </h3>
+              <p className="text-xs text-ink-soft max-w-xl">
+                Proactively forecast your 5-year and 10-year onset probabilities for Type 2 Diabetes, Heart Disease, Hypertension, and Fatty Liver. Simulate how modest lifestyle upgrades reverse your vulnerability trajectory.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3 z-10">
+              <Link
+                href="/app/future-disease-predictor"
+                className="lif-btn-primary py-2.5 px-5 text-xs font-bold shadow-md whitespace-nowrap flex items-center gap-2"
+              >
+                <span>Simulate Future Risk</span>
+                <span>→</span>
+              </Link>
+            </div>
+          </div>
         </div>
       )}
 

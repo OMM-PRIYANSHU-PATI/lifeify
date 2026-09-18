@@ -21,8 +21,12 @@ export const NAV_SECTIONS: NavSection[] = [
     title: "Daily Health OS",
     items: [
       { href: "/app/dashboard", label: "Overview", emoji: "🏠" },
-      { href: "/app/features", label: "414 Feature Hub", emoji: "✨", badge: "414" },
+      { href: "/app/timeline", label: "Health Timeline", emoji: "📅" },
+      { href: "/app/calendar", label: "Health Calendar", emoji: "🗓️" },
+      { href: "/app/goals", label: "Health Goals", emoji: "🎯" },
+      { href: "/app/achievements", label: "XP & Badges", emoji: "🏆" },
       { href: "/app/analytics", label: "Analytics & Trends", emoji: "📊" },
+      { href: "/app/features", label: "414 Feature Hub", emoji: "✨", badge: "414" },
       { href: "/app/insights", label: "Clinical Intelligence", emoji: "🧠" },
       { href: "/app/wearables", label: "Wearables & Vitals", emoji: "⌚" },
       { href: "/app/plans", label: "Personalized Plans", emoji: "📋" },
@@ -38,6 +42,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { href: "/app/pharmacy", label: "Pharmacy Refills", emoji: "📦" },
       { href: "/app/symptom-checker", label: "Symptom Triage", emoji: "🩺" },
       { href: "/app/risk-assessment", label: "Disease Risk (IDRS)", emoji: "🎯" },
+      { href: "/app/future-disease-predictor", label: "Future Disease Predictor", emoji: "🔮", badge: "PREDICT" },
     ],
   },
   {
@@ -45,6 +50,7 @@ export const NAV_SECTIONS: NavSection[] = [
     items: [
       { href: "/app/emergency-card", label: "Emergency Card", emoji: "🚨", badge: "SOS" },
       { href: "/app/family", label: "Family & Caregivers", emoji: "👨‍👩‍👧" },
+      { href: "/app/family-history", label: "Family Medical History", emoji: "🧬" },
       { href: "/doctor/rpm", label: "Doctor RPM Portal", emoji: "👨‍⚕️" },
       { href: "/corporate/dashboard", label: "Corporate Wellness", emoji: "🏢" },
       { href: "/app/privacy", label: "Privacy Center", emoji: "🔒" },
