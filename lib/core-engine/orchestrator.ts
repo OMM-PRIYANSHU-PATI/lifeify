@@ -42,12 +42,29 @@ export interface OrchestratedOverviewResult {
   crossDomainPatterns: string[];
 }
 
+const globalHealthStores = globalThis as unknown as {
+  __lififyHealthStores?: {
+    workoutsStore: Map<string, WorkoutRecord[]>;
+    sleepStore: Map<string, SleepSessionRecord[]>;
+    medicationStore: Map<string, MedicationDoseLog[]>;
+    symptomStore: Map<string, SymptomLogRecord[]>;
+  };
+};
+
+if (!globalHealthStores.__lififyHealthStores) {
+  globalHealthStores.__lififyHealthStores = {
+    workoutsStore: new Map(),
+    sleepStore: new Map(),
+    medicationStore: new Map(),
+    symptomStore: new Map(),
+  };
+}
+
 export class AIHealthIntelligenceEngine {
-  // In-memory data store for the active session (can sync to DB/Prisma)
-  private workoutsStore = new Map<string, WorkoutRecord[]>();
-  private sleepStore = new Map<string, SleepSessionRecord[]>();
-  private medicationStore = new Map<string, MedicationDoseLog[]>();
-  private symptomStore = new Map<string, SymptomLogRecord[]>();
+  private workoutsStore = globalHealthStores.__lififyHealthStores.workoutsStore;
+  private sleepStore = globalHealthStores.__lififyHealthStores.sleepStore;
+  private medicationStore = globalHealthStores.__lififyHealthStores.medicationStore;
+  private symptomStore = globalHealthStores.__lififyHealthStores.symptomStore;
 
   constructor() {
     this.setupEventListeners();
