@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { FeatureSpec } from "@/lib/features/types";
+import { AIInsightWrapper } from "@/components/dashboard/ai-insight-wrapper";
 
 interface AppleHealthDashboardProps {
   user: {
@@ -354,6 +355,38 @@ export function AppleHealthDashboard({
       {/* ========================================================================= */}
       {activeTab === "summary" && (
         <div className="space-y-6">
+          <AIInsightWrapper />
+
+          {/* Health Intelligence Engine Banner */}
+          <Link
+            href="/app/health-intelligence"
+            className="block p-4 rounded-3xl bg-gradient-to-r from-rose-500/10 via-purple-500/10 to-indigo-500/10 border border-rose-200/50 dark:border-rose-900/40 hover:shadow-md transition-all group"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-3">
+                <span className="p-2.5 rounded-2xl bg-gradient-to-br from-rose-500 to-indigo-600 text-white text-base shadow-xs">
+                  ⚡
+                </span>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-ink group-hover:text-rose-600 transition-colors">
+                      Core Health Intelligence Engine
+                    </span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 font-bold">
+                      NEW CORE
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-ink-muted">
+                    Explore rolling 7d/30d/90d baseline z-scores, recovery-adjusted training strain, and 90-day longitudinal simulation.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1 group-hover:translate-x-1 transition-transform shrink-0">
+                Open Command Center →
+              </span>
+            </div>
+          </Link>
+
           {/* Daily Health Rings / Health Score Banner */}
           <div className="rounded-3xl border border-line bg-surface p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="space-y-1.5 text-center md:text-left">

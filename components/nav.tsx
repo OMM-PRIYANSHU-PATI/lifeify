@@ -20,6 +20,7 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     title: "Daily Health OS",
     items: [
+      { href: "/app/health-intelligence", label: "Health Intelligence", emoji: "⚡", badge: "CORE" },
       { href: "/app/dashboard", label: "Overview", emoji: "🏠" },
       { href: "/app/timeline", label: "Health Timeline", emoji: "📅" },
       { href: "/app/calendar", label: "Health Calendar", emoji: "🗓️" },
