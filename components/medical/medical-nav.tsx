@@ -76,6 +76,7 @@ export function MedicalNav({
 
   const navItems = [
     { href: "/app/dashboard", label: "Health OS", icon: HeartPulse, highlight: true },
+    { href: "/symptom-to-disease", label: "🩺 Symptom AI", icon: Stethoscope, highlight: true },
     { href: "/future-disease-predictor", label: "🔮 Predictor", icon: Sparkles, highlight: true },
     { href: "/features", label: "316 Features", icon: Layers },
     { href: "/diagnostic-arena", label: "Arena", icon: Flame },

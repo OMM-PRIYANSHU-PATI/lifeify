@@ -41,6 +41,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { href: "/app/labs", label: "Diagnostic Labs", emoji: "🧪" },
       { href: "/app/pharmacy", label: "Pharmacy Refills", emoji: "📦" },
       { href: "/app/symptom-checker", label: "Symptom Triage", emoji: "🩺" },
+      { href: "/app/symptom-to-disease", label: "Symptom to Disease (AI)", emoji: "🩺", badge: "GEMINI" },
       { href: "/app/risk-assessment", label: "Disease Risk (IDRS)", emoji: "🎯" },
       { href: "/app/future-disease-predictor", label: "Future Disease Predictor", emoji: "🔮", badge: "PREDICT" },
     ],
